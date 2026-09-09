@@ -3,7 +3,7 @@ import { ChevronDown, FolderPlus, PanelLeft, RefreshCw, Search, Settings2, Squar
 import type { SessionStatus } from "@shared/contract";
 import { keyForPath, useApp } from "@/store/app";
 import { IconButton, Spinner } from "@/components/ui";
-import { Mark } from "@/components/Logo";
+import { Glyph } from "@/components/Logo";
 import { cn, relativeTime } from "@/lib/utils";
 
 function StatusDot({ status }: { status: SessionStatus | "off" }) {
@@ -63,10 +63,7 @@ export function Sidebar() {
         <IconButton label="Hide sidebar (Cmd+B)" onClick={() => void update({ sidebarCollapsed: true })}>
           <PanelLeft className="h-4 w-4" strokeWidth={1.75} />
         </IconButton>
-        <span className="flex items-center gap-2 text-[13px] font-semibold tracking-tight">
-          <Mark />
-          Pi
-        </span>
+        <Glyph className="h-[18px] w-[18px] text-fg" />
         <span className="w-7" />
       </div>
 
