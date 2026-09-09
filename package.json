@@ -1,7 +1,7 @@
 {
   "name": "pi-gui",
   "productName": "Pi",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A macOS desktop client for the pi coding agent",
   "license": "MIT",
   "private": true,
