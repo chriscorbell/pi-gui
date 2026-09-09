@@ -19,7 +19,7 @@ pnpm install
 pnpm dev
 ```
 
-`pnpm dist` builds an unsigned DMG into `release/`. Tagged pushes (`v*`) build the same DMG in GitHub Actions and attach it to a release.
+`pnpm dist` builds an unsigned DMG and zip into `release/`. Tagged pushes (`v*`) build both in GitHub Actions and attach them to a release. The installed app checks GitHub Releases on launch and every six hours, and updates itself from the zip when you click Install; Check for Updates in the Pi menu does the same on demand. Unsigned apps cannot use Squirrel, so the update swaps the bundle in place and relaunches, which needs the app to live in a folder you own, such as `/Applications` or `~/Applications`.
 
 ## What it does
 

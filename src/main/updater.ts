@@ -54,6 +54,14 @@ export class Updater extends EventEmitter<{ state: [UpdateState] }> {
 
   start(): void {
     if (!app.isPackaged) return;
+    // Remove bundles left beside us by earlier updates. They were still running when they were
+    // replaced, so they could not be deleted then.
+    const appPath = process.execPath.split(".app/")[0] + ".app";
+    const parent = dirname(appPath);
+    const prefix = `.${basename(appPath)}.old`;
+    void readdir(parent)
+      .then((entries) => Promise.all(entries.filter((e) => e.startsWith(prefix)).map((e) => rm(join(parent, e), { recursive: true, force: true }).catch(() => {}))))
+      .catch(() => {});
     void this.check(true);
     this.timer = setInterval(() => void this.check(true), CHECK_INTERVAL_MS);
     this.timer.unref();
@@ -92,7 +100,7 @@ export class Updater extends EventEmitter<{ state: [UpdateState] }> {
     const asset = release.assets.find((a) => /arm64.*\.zip$/i.test(a.name))!;
     const appPath = join(process.execPath.split(".app/")[0] + ".app");
     const parent = dirname(appPath);
-    this.set({ status: "downloading", progress: 0 });
+    this.set({ status: "downloading", progress: 0, error: undefined });
     let work: string | null = null;
     try {
       // The bundle's parent must be writable for the swap; /Applications usually is for the owner.
@@ -124,9 +132,8 @@ export class Updater extends EventEmitter<{ state: [UpdateState] }> {
       if (!bundle) throw new Error("The zip did not contain an app bundle");
       const newApp = join(extractDir, bundle);
 
-      // Swap: move the running bundle aside, move the new one into place, then drop the old one.
-      const oldApp = join(parent, `.${basename(appPath)}.old`);
-      await rm(oldApp, { recursive: true, force: true });
+      // Swap: move the running bundle aside under a unique name, then move the new one into place.
+      const oldApp = join(parent, `.${basename(appPath)}.old-${Date.now()}`);
       await rename(appPath, oldApp);
       try {
         await rename(newApp, appPath);
@@ -134,7 +141,8 @@ export class Updater extends EventEmitter<{ state: [UpdateState] }> {
         await rename(oldApp, appPath);
         throw err;
       }
-      await rm(oldApp, { recursive: true, force: true });
+      // The old bundle still backs the running process and cannot be fully deleted until we exit;
+      // start() removes it on the next launch.
       this.set({ status: "ready", progress: 1 });
     } catch (err) {
       this.set({ status: "available", error: String((err as Error).message ?? err), progress: undefined });

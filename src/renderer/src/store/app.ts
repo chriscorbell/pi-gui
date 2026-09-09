@@ -417,13 +417,16 @@ export const useApp = create<AppState>((set, get) => {
       bridge.events.onWindowFocus((focused) => set({ windowFocused: focused }));
       void bridge.update.state().then((update) => set({ update }));
       let announced: string | null = null;
+      let lastError: string | undefined;
       bridge.events.onUpdateChanged((update) => {
         set({ update });
         if (update.status === "available" && update.latestVersion && announced !== update.latestVersion) {
           announced = update.latestVersion;
           get().pushToast(`Pi ${update.latestVersion} is available. Install it from the sidebar or the Pi menu.`, "info");
         }
-        if (update.error) get().pushToast(update.error, "warning");
+        // State is re-emitted on every progress tick; only a new error message deserves a toast.
+        if (update.error && update.error !== lastError) get().pushToast(update.error, "warning");
+        lastError = update.error;
       });
 
       // Reopen the last Session if its file still exists.
