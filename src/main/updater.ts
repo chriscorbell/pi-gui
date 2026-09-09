@@ -55,13 +55,17 @@ export class Updater extends EventEmitter<{ state: [UpdateState] }> {
   start(): void {
     if (!app.isPackaged) return;
     // Remove bundles left beside us by earlier updates. They were still running when they were
-    // replaced, so they could not be deleted then.
+    // replaced, and the previous process may still be exiting as this one starts, so retry a few times.
     const appPath = process.execPath.split(".app/")[0] + ".app";
     const parent = dirname(appPath);
     const prefix = `.${basename(appPath)}.old`;
-    void readdir(parent)
-      .then((entries) => Promise.all(entries.filter((e) => e.startsWith(prefix)).map((e) => rm(join(parent, e), { recursive: true, force: true }).catch(() => {}))))
-      .catch(() => {});
+    const sweep = async () => {
+      const entries = await readdir(parent).catch(() => [] as string[]);
+      for (const e of entries) {
+        if (e.startsWith(prefix)) await rm(join(parent, e), { recursive: true, force: true }).catch(() => {});
+      }
+    };
+    for (const delay of [2000, 15000, 60000]) setTimeout(() => void sweep(), delay).unref();
     void this.check(true);
     this.timer = setInterval(() => void this.check(true), CHECK_INTERVAL_MS);
     this.timer.unref();
