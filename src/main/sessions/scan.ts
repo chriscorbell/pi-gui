@@ -5,13 +5,33 @@ import type { ProjectSummary, SessionSummary } from "@shared/contract";
 
 export const SESSIONS_DIR = join(homedir(), ".pi", "agent", "sessions");
 
-/** Read up to `bytes` from the start of a file. Session files can be large; we only need the head. */
-function readHead(path: string, bytes: number): string {
+/**
+ * Read complete lines from the start of a file until `done` returns true or `maxBytes` is reached.
+ * Session lines can be huge (an image paste is one line), so this grows in chunks instead of
+ * reading a fixed window.
+ */
+function readLinesUntil(path: string, done: (line: string) => boolean, maxBytes: number): string[] {
   const fd = openSync(path, "r");
+  const out: string[] = [];
   try {
-    const buf = Buffer.alloc(bytes);
-    const n = readSync(fd, buf, 0, bytes, 0);
-    return buf.subarray(0, n).toString("utf8");
+    const chunk = Buffer.alloc(128 * 1024);
+    let carry = "";
+    let offset = 0;
+    while (offset < maxBytes) {
+      const n = readSync(fd, chunk, 0, chunk.length, offset);
+      if (n === 0) break;
+      offset += n;
+      carry += chunk.subarray(0, n).toString("utf8");
+      let idx: number;
+      while ((idx = carry.indexOf("\n")) >= 0) {
+        const line = carry.slice(0, idx);
+        carry = carry.slice(idx + 1);
+        out.push(line);
+        if (done(line)) return out;
+      }
+    }
+    if (carry) out.push(carry);
+    return out;
   } finally {
     closeSync(fd);
   }
@@ -46,8 +66,8 @@ export function summarizeSession(path: string): SessionSummary | null {
   let header: Header | null = null;
   let title: string | null = null;
   try {
-    const head = readHead(path, 64 * 1024);
-    const lines = head.split("\n");
+    // Stop at the first user message; that is all the title needs.
+    const lines = readLinesUntil(path, (l) => l.includes('"role":"user"'), 32 * 1024 * 1024);
     for (const line of lines) {
       if (!line.trim()) continue;
       let entry: Record<string, unknown>;
