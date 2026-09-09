@@ -1,0 +1,20 @@
+appId: com.chriscorbell.pi-gui
+productName: Pi
+directories:
+  output: release
+  buildResources: build
+files:
+  - out/**
+  - package.json
+mac:
+  category: public.app-category.developer-tools
+  target:
+    - target: dmg
+      arch: [arm64]
+  identity: null
+  hardenedRuntime: false
+  gatekeeperAssess: false
+  darkModeSupport: true
+dmg:
+  artifactName: Pi-${version}-${arch}.${ext}
+npmRebuild: false

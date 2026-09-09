@@ -1,0 +1,299 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Light palette on :root, dark palette on .dark. One accent, one neutral family (zinc). */
+:root {
+  --bg: oklch(0.985 0.002 250);
+  --bg-sunken: oklch(0.965 0.003 250);
+  --surface: oklch(0.995 0.001 250);
+  --surface-raised: oklch(1 0 0);
+  --border: oklch(0 0 0 / 0.09);
+  --border-strong: oklch(0 0 0 / 0.16);
+  --fg: oklch(0.22 0.01 260);
+  --fg-muted: oklch(0.5 0.012 260);
+  --fg-faint: oklch(0.66 0.01 260);
+  --accent: oklch(0.55 0.19 262);
+  --accent-fg: oklch(0.99 0 0);
+  --accent-soft: oklch(0.55 0.19 262 / 0.12);
+  --ok: oklch(0.62 0.16 150);
+  --warn: oklch(0.75 0.16 75);
+  --danger: oklch(0.6 0.2 25);
+  --danger-soft: oklch(0.6 0.2 25 / 0.12);
+  --hover: oklch(0 0 0 / 0.045);
+  --active: oklch(0 0 0 / 0.08);
+  --code-bg: oklch(0.955 0.004 250);
+  --shadow: 0 8px 28px oklch(0.2 0.02 260 / 0.14), 0 1px 2px oklch(0.2 0.02 260 / 0.08);
+  --radius: 8px;
+  --radius-lg: 12px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: oklch(0.165 0.004 260);
+  --bg-sunken: oklch(0.145 0.004 260);
+  --surface: oklch(0.19 0.004 260);
+  --surface-raised: oklch(0.225 0.005 260);
+  --border: oklch(1 0 0 / 0.07);
+  --border-strong: oklch(1 0 0 / 0.13);
+  --fg: oklch(0.92 0.005 260);
+  --fg-muted: oklch(0.66 0.008 260);
+  --fg-faint: oklch(0.5 0.008 260);
+  --accent: oklch(0.68 0.16 262);
+  --accent-fg: oklch(0.13 0.02 262);
+  --accent-soft: oklch(0.68 0.16 262 / 0.16);
+  --ok: oklch(0.72 0.15 150);
+  --warn: oklch(0.8 0.15 75);
+  --danger: oklch(0.7 0.18 25);
+  --danger-soft: oklch(0.7 0.18 25 / 0.16);
+  --hover: oklch(1 0 0 / 0.05);
+  --active: oklch(1 0 0 / 0.09);
+  --code-bg: oklch(0.14 0.004 260);
+  --shadow: 0 12px 36px oklch(0 0 0 / 0.5), 0 1px 2px oklch(0 0 0 / 0.4);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-sunken: var(--bg-sunken);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-faint: var(--fg-faint);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-hover: var(--hover);
+  --color-active: var(--active);
+  --color-code-bg: var(--code-bg);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius-lg);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  user-select: none;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.drag {
+  -webkit-app-region: drag;
+}
+.no-drag {
+  -webkit-app-region: no-drag;
+}
+
+.selectable {
+  user-select: text;
+}
+
+/* Markdown inside assistant messages */
+.prose-pi {
+  user-select: text;
+  overflow-wrap: anywhere;
+}
+.prose-pi > * + * {
+  margin-top: 0.7em;
+}
+.prose-pi p {
+  margin: 0;
+}
+.prose-pi h1,
+.prose-pi h2,
+.prose-pi h3,
+.prose-pi h4 {
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 1.1em;
+}
+.prose-pi h1 {
+  font-size: 1.25em;
+}
+.prose-pi h2 {
+  font-size: 1.12em;
+}
+.prose-pi h3,
+.prose-pi h4 {
+  font-size: 1em;
+}
+.prose-pi ul,
+.prose-pi ol {
+  padding-left: 1.4em;
+  margin: 0;
+}
+.prose-pi ul {
+  list-style: disc;
+}
+.prose-pi ol {
+  list-style: decimal;
+}
+.prose-pi li + li {
+  margin-top: 0.2em;
+}
+.prose-pi code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0.1em 0.35em;
+}
+.prose-pi pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.prose-pi pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+}
+.prose-pi a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklch, var(--accent) 40%, transparent);
+  text-underline-offset: 2px;
+}
+.prose-pi blockquote {
+  border-left: 2px solid var(--border-strong);
+  padding-left: 12px;
+  color: var(--fg-muted);
+}
+.prose-pi table {
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.prose-pi th,
+.prose-pi td {
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  text-align: left;
+}
+.prose-pi hr {
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+/* Motion */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.anim-fade-up {
+  animation: fade-up 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.anim-fade-in {
+  animation: fade-in 140ms ease-out both;
+}
+.anim-spin {
+  animation: spin 900ms linear infinite;
+}
+.anim-pulse {
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .anim-fade-up,
+  .anim-fade-in {
+    animation: none;
+  }
+  .anim-pulse {
+    animation: none;
+  }
+}
+
+/* Streaming caret */
+.caret::after {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: var(--fg-muted);
+  border-radius: 1px;
+  animation: pulse-dot 1s ease-in-out infinite;
+}
+
+/* @pierre/diffs theming hooks */
+[data-diff-root] {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}

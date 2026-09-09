@@ -1,0 +1,189 @@
+import { app, BrowserWindow, dialog, ipcMain, shell, nativeTheme } from "electron";
+import { existsSync, watch, type FSWatcher } from "node:fs";
+import { execFile } from "node:child_process";
+import { join } from "node:path";
+import { IPC, type ExtensionUiResponse, type GuiSettings, type ChangedFile } from "@shared/contract";
+import { loadSettings, saveSettings } from "./settings";
+import { scanProjects, SESSIONS_DIR } from "./sessions/scan";
+import { SessionHost } from "./pi/session-host";
+import { changedFiles, patchFor } from "./git";
+import { locatePi } from "./pi/locate";
+
+const host = new SessionHost();
+const openedFolders = new Set<string>();
+let win: BrowserWindow | null = null;
+
+function send(channel: string, payload: unknown): void {
+  if (win && !win.isDestroyed()) win.webContents.send(channel, payload);
+}
+
+function applyTheme(theme: GuiSettings["theme"]): void {
+  nativeTheme.themeSource = theme;
+}
+
+function updateBadge(): void {
+  if (process.platform !== "darwin") return;
+  const n = host.attentionCount();
+  app.dock?.setBadge(n > 0 ? String(n) : "");
+}
+
+function createWindow(): void {
+  win = new BrowserWindow({
+    width: 1360,
+    height: 880,
+    minWidth: 900,
+    minHeight: 560,
+    show: false,
+    titleBarStyle: "hiddenInset",
+    trafficLightPosition: { x: 14, y: 14 },
+    backgroundColor: nativeTheme.shouldUseDarkColors ? "#0b0b0c" : "#fafafa",
+    webPreferences: {
+      preload: join(__dirname, "../preload/index.mjs"),
+      sandbox: false,
+      contextIsolation: true,
+    },
+  });
+  win.once("ready-to-show", () => win?.show());
+  win.on("focus", () => {
+    host.setWindowFocused(true);
+    send(IPC.windowFocus, true);
+    updateBadge();
+  });
+  win.on("blur", () => {
+    host.setWindowFocused(false);
+    send(IPC.windowFocus, false);
+  });
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: "deny" };
+  });
+  if (process.env.ELECTRON_RENDERER_URL) {
+    win.loadURL(process.env.ELECTRON_RENDERER_URL);
+  } else {
+    win.loadFile(join(__dirname, "../renderer/index.html"));
+  }
+}
+
+// ---- watchers ----
+
+let sessionsWatcher: FSWatcher | null = null;
+let sessionsTimer: NodeJS.Timeout | null = null;
+function watchSessions(): void {
+  if (!existsSync(SESSIONS_DIR)) return;
+  sessionsWatcher = watch(SESSIONS_DIR, { recursive: true }, () => {
+    if (sessionsTimer) clearTimeout(sessionsTimer);
+    sessionsTimer = setTimeout(() => send(IPC.projectsChanged, null), 400);
+  });
+}
+
+let gitWatcher: FSWatcher | null = null;
+let gitWatchedCwd: string | null = null;
+let gitTimer: NodeJS.Timeout | null = null;
+function watchGit(cwd: string | null): void {
+  if (cwd === gitWatchedCwd) return;
+  gitWatcher?.close();
+  gitWatcher = null;
+  gitWatchedCwd = cwd;
+  if (!cwd || !existsSync(cwd)) return;
+  try {
+    gitWatcher = watch(cwd, { recursive: true }, (_event, filename) => {
+      const f = String(filename ?? "");
+      if (f.startsWith(".git/") || f.includes("/.git/") || f.includes("node_modules")) return;
+      if (gitTimer) clearTimeout(gitTimer);
+      gitTimer = setTimeout(() => send(IPC.gitChanged, cwd), 500);
+    });
+  } catch {
+    gitWatcher = null;
+  }
+}
+
+// ---- IPC ----
+
+function registerIpc(): void {
+  ipcMain.handle(IPC.settingsGet, () => loadSettings());
+  ipcMain.handle(IPC.settingsSet, (_e, patch: Partial<GuiSettings>) => {
+    const next = saveSettings(patch);
+    if (patch.theme) applyTheme(patch.theme);
+    return next;
+  });
+
+  ipcMain.handle(IPC.projectsList, () => scanProjects([...openedFolders]));
+  ipcMain.handle(IPC.projectOpenFolder, async () => {
+    if (!win) return null;
+    const res = await dialog.showOpenDialog(win, { properties: ["openDirectory", "createDirectory"] });
+    if (res.canceled || res.filePaths.length === 0) return null;
+    const cwd = res.filePaths[0];
+    openedFolders.add(cwd);
+    return cwd;
+  });
+  ipcMain.handle(IPC.projectFiles, async (_e, cwd: string) => listProjectFiles(cwd));
+
+  ipcMain.handle(IPC.sessionOpen, (_e, cwd: string, path: string) => host.open(cwd, path));
+  ipcMain.handle(IPC.sessionNew, (_e, cwd: string) => host.open(cwd, null));
+  ipcMain.handle(IPC.sessionClose, (_e, key: string) => host.close(key));
+  ipcMain.handle(IPC.sessionSelect, (_e, key: string | null, cwd: string | null) => {
+    host.select(key);
+    watchGit(cwd);
+    updateBadge();
+    if (key) saveSettings({ lastSessionKey: key });
+  });
+  ipcMain.handle(IPC.sessionLive, () => host.liveStates());
+  ipcMain.handle(IPC.sessionTrash, async (_e, key: string, path: string) => {
+    host.forget(key);
+    await shell.trashItem(path);
+    updateBadge();
+  });
+  ipcMain.handle(IPC.sessionRestart, (_e, key: string) => host.restart(key));
+
+  ipcMain.handle(IPC.piCommand, (_e, key: string, command: Record<string, unknown>) => host.command(key, command));
+  ipcMain.handle(IPC.piUiRespond, (_e, key: string, id: string, response: ExtensionUiResponse) => {
+    host.respondToDialog(key, id, response);
+    updateBadge();
+  });
+  ipcMain.handle(IPC.piLocate, () => locatePi(loadSettings().piPath));
+
+  ipcMain.handle(IPC.gitChanges, (_e, cwd: string) => changedFiles(cwd));
+  ipcMain.handle(IPC.gitPatch, (_e, cwd: string, file: ChangedFile) => patchFor(cwd, file));
+}
+
+function listProjectFiles(cwd: string): Promise<string[]> {
+  return new Promise((resolve) => {
+    execFile(
+      "git",
+      ["ls-files", "--cached", "--others", "--exclude-standard", "-z"],
+      { cwd, maxBuffer: 16 * 1024 * 1024 },
+      (err, stdout) => {
+        if (err) return resolve([]);
+        resolve(stdout.split("\0").filter(Boolean).slice(0, 20000));
+      },
+    );
+  });
+}
+
+host.on("event", (payload) => {
+  send(IPC.piEvent, payload);
+});
+host.on("live", (state) => {
+  send(IPC.sessionLiveChanged, state);
+  updateBadge();
+});
+
+app.whenReady().then(() => {
+  applyTheme(loadSettings().theme);
+  registerIpc();
+  createWindow();
+  watchSessions();
+  app.on("activate", () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+});
+
+app.on("window-all-closed", () => {
+  app.quit();
+});
+
+app.on("before-quit", () => {
+  sessionsWatcher?.close();
+  gitWatcher?.close();
+  host.shutdown();
+});
