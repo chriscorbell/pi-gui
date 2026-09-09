@@ -17,7 +17,4 @@ Shipped alongside: Stop retrying button, Compact with optional instructions, spl
 
 ## Decided against
 
-Tool approval gate, project trust dialog, code signing, sidebar row height change.
-## Decided against
-
-Per-turn diff checkpoints. The agent shell no longer inherits interactive zsh aliases (the `shellCommandPrefix` line was removed from the pi settings in llm-server on 2026-09-09).
+Tool approval gate, project trust dialog, code signing, sidebar row height change, per-turn diff checkpoints. The agent shell no longer inherits interactive zsh aliases: the `shellCommandPrefix` line was removed from the pi settings in llm-server on 2026-09-09.
