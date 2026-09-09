@@ -5,6 +5,7 @@ import type { ToolRun } from "@/store/app";
 import type { ToolResultMsg } from "@/lib/transcript";
 import { textOf } from "@/lib/transcript";
 import { Spinner } from "@/components/ui";
+import { CopyMenu } from "@/components/CopyMenu";
 import { cn } from "@/lib/utils";
 
 type ToolCall = Extract<ContentBlock, { type: "toolCall" }>;
@@ -98,7 +99,9 @@ export function ToolCallRow({ call, result, run, pendingArgs }: { call: ToolCall
   const resultText = result ? textOf(result.content) : run?.partial ?? "";
   const hasBody = Boolean(resultText) || Boolean(diff) || (call.name === "write" && typeof call.arguments.content === "string");
 
+  const copyText = diff ?? (call.name === "write" && typeof call.arguments.content === "string" ? call.arguments.content : resultText);
   return (
+    <CopyMenu text={copyText} label={diff ? "Copy diff" : "Copy output"}>
     <div className={cn("rounded-md border bg-bg-sunken", isError ? "border-danger/40" : "border-border")}>
       <button
         onClick={() => hasBody && setOpen(!expanded)}
@@ -135,5 +138,6 @@ export function ToolCallRow({ call, result, run, pendingArgs }: { call: ToolCall
         </div>
       )}
     </div>
+    </CopyMenu>
   );
 }

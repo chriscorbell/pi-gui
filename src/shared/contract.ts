@@ -254,6 +254,7 @@ export const IPC = {
   updateInstall: "update:install",
   updateRestart: "update:restart",
   updateOpenRelease: "update:openRelease",
+  clipboardWrite: "clipboard:write",
   piLocate: "pi:locate",
   // main -> renderer (send)
   piEvent: "pi:event",

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain, shell, nativeTheme } from "electron";
+import { app, BrowserWindow, clipboard, dialog, ipcMain, shell, nativeTheme } from "electron";
 import { existsSync, watch, type FSWatcher } from "node:fs";
 import { execFile } from "node:child_process";
 import { join } from "node:path";
@@ -180,6 +180,8 @@ function registerIpc(): void {
   ipcMain.handle(IPC.updateInstall, () => updater.install());
   ipcMain.handle(IPC.updateRestart, () => updater.restart());
   ipcMain.handle(IPC.updateOpenRelease, () => updater.openRelease());
+  // The async web clipboard needs a focused document; Electron's clipboard does not.
+  ipcMain.handle(IPC.clipboardWrite, (_e, text: string) => clipboard.writeText(text));
 }
 
 function listProjectFiles(cwd: string): Promise<string[]> {

@@ -50,6 +50,9 @@ export const bridge = {
     resize: (id: string, cols: number, rows: number) => invoke(IPC.terminalResize, id, cols, rows) as Promise<void>,
     close: (id: string) => invoke(IPC.terminalClose, id) as Promise<void>,
   },
+  clipboard: {
+    write: (text: string) => invoke(IPC.clipboardWrite, text) as Promise<void>,
+  },
   update: {
     state: () => invoke(IPC.updateState) as Promise<UpdateState>,
     check: () => invoke(IPC.updateCheck) as Promise<void>,

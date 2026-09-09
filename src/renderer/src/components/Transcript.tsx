@@ -8,6 +8,7 @@ import { useApp } from "@/store/app";
 import type { AssistantMsg, ToolResultMsg, TranscriptItem } from "@/lib/transcript";
 import { ToolCallRow } from "@/components/ToolCallRow";
 import { Spinner } from "@/components/ui";
+import { CopyButton, CopyMenu } from "@/components/CopyMenu";
 import { cn } from "@/lib/utils";
 
 const Markdown = memo(function Markdown({ text }: { text: string }) {
@@ -78,38 +79,58 @@ function AssistantBlocks({
   );
 }
 
+function assistantText(message: AssistantMsg): string {
+  return message.content
+    .filter((b): b is Extract<ContentBlock, { type: "text" }> => b.type === "text")
+    .map((b) => b.text.trim())
+    .filter(Boolean)
+    .join("\n\n");
+}
+
 function AssistantItem({ message, results, toolRuns }: { message: AssistantMsg; results: Record<string, ToolResultMsg>; toolRuns: Record<string, ToolRun> }) {
+  const text = assistantText(message);
   return (
-    <div className="py-2">
-      <AssistantBlocks content={message.content} results={results} toolRuns={toolRuns} streaming={false} />
+    <CopyMenu text={text}>
+      <div className="group relative py-2">
+        {text && (
+          <div className="absolute -top-1 right-0">
+            <CopyButton text={text} />
+          </div>
+        )}
+        <AssistantBlocks content={message.content} results={results} toolRuns={toolRuns} streaming={false} />
       {message.stopReason === "error" && (
         <div className="selectable mt-2 rounded-md border border-danger/30 bg-danger-soft px-3 py-2 text-[13.5px] text-danger">
           {message.errorMessage ?? "The model returned an error."}
         </div>
       )}
       {message.stopReason === "aborted" && <div className="mt-1 text-[12.5px] text-fg-faint">Aborted</div>}
-    </div>
+      </div>
+    </CopyMenu>
   );
 }
 
 function UserItem({ text, images }: { text: string; images: number }) {
   return (
-    <div className="flex justify-end py-2">
-      <div className="selectable max-w-[85%] rounded-lg bg-surface-raised border border-border px-3.5 py-2 text-[14.5px] leading-[1.55] whitespace-pre-wrap break-words">
-        {text}
-        {images > 0 && (
-          <div className="mt-1.5 flex items-center gap-1 text-[12.5px] text-fg-muted">
-            <ImageIcon className="h-3.5 w-3.5" strokeWidth={1.75} /> {images} image{images > 1 ? "s" : ""}
-          </div>
-        )}
+    <CopyMenu text={text}>
+      <div className="group flex items-start justify-end gap-1 py-2">
+        <CopyButton text={text} className="mt-1.5" />
+        <div className="selectable max-w-[85%] rounded-lg bg-surface-raised border border-border px-3.5 py-2 text-[14.5px] leading-[1.55] whitespace-pre-wrap break-words">
+          {text}
+          {images > 0 && (
+            <div className="mt-1.5 flex items-center gap-1 text-[12.5px] text-fg-muted">
+              <ImageIcon className="h-3.5 w-3.5" strokeWidth={1.75} /> {images} image{images > 1 ? "s" : ""}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </CopyMenu>
   );
 }
 
 function BashItem({ command, output, exitCode }: { command: string; output: string; exitCode?: number }) {
   const [open, setOpen] = useState(false);
   return (
+    <CopyMenu text={output} label="Copy output">
     <div className="my-1 rounded-md border border-border bg-bg-sunken font-mono text-[13px]">
       <button onClick={() => setOpen(!open)} className="flex w-full items-center gap-2 px-3 py-1.5 text-left">
         <Terminal className="h-3.5 w-3.5 shrink-0 text-fg-muted" strokeWidth={1.75} />
@@ -118,6 +139,7 @@ function BashItem({ command, output, exitCode }: { command: string; output: stri
       </button>
       {open && <pre className="selectable max-h-72 overflow-auto border-t border-border px-3 py-2 whitespace-pre-wrap text-fg-muted">{output}</pre>}
     </div>
+    </CopyMenu>
   );
 }
 
