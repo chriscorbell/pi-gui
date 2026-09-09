@@ -142,15 +142,22 @@ a[href] {
 }
 
 /* Markdown inside assistant messages */
+/* The element resets use :where() so they carry no specificity. That lets the
+   `> * + *` spacing rule, declared after them, win the cascade and add space
+   between every block, paragraphs included. Heading top margins come last. */
 .prose-pi {
   user-select: text;
   overflow-wrap: anywhere;
 }
+.prose-pi :where(p) {
+  margin: 0;
+}
+.prose-pi :where(ul, ol) {
+  padding-left: 1.4em;
+  margin: 0;
+}
 .prose-pi > * + * {
   margin-top: 0.7em;
-}
-.prose-pi p {
-  margin: 0;
 }
 .prose-pi h1,
 .prose-pi h2,
@@ -169,11 +176,6 @@ a[href] {
 .prose-pi h3,
 .prose-pi h4 {
   font-size: 1em;
-}
-.prose-pi ul,
-.prose-pi ol {
-  padding-left: 1.4em;
-  margin: 0;
 }
 .prose-pi ul {
   list-style: disc;
