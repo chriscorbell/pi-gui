@@ -56,7 +56,7 @@ export function DiffPanel() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex h-9 shrink-0 items-center gap-2 border-b border-border px-3 text-[12px] font-medium text-fg-muted">
+      <div className="drag flex h-[52px] shrink-0 items-center gap-2 border-b border-border px-3 text-[12px] font-medium text-fg-muted">
         <FileDiff className="h-3.5 w-3.5" strokeWidth={1.75} />
         <span className="flex-1">Changes</span>
         {loading && <Spinner />}

@@ -59,3 +59,11 @@ export async function patchFor(cwd: string, file: ChangedFile): Promise<string> 
   }
   return git(cwd, ["diff", "HEAD", "--", file.path, ...(file.oldPath ? [file.oldPath] : [])]);
 }
+
+export async function currentBranch(cwd: string): Promise<string | null> {
+  try {
+    return (await git(cwd, ["rev-parse", "--abbrev-ref", "HEAD"])).trim() || null;
+  } catch {
+    return null;
+  }
+}

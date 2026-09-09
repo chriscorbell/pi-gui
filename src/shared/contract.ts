@@ -53,10 +53,10 @@ export const DEFAULT_SETTINGS: GuiSettings = {
   muted: false,
   piPath: null,
   diffStyle: "unified",
-  sidebarWidth: 272,
-  panelWidth: 420,
+  sidebarWidth: 236,
+  panelWidth: 440,
   sidebarCollapsed: false,
-  panelCollapsed: false,
+  panelCollapsed: true,
   collapsedProjects: [],
   lastSessionKey: null,
 };
@@ -228,6 +228,7 @@ export const IPC = {
   piUiRespond: "pi:uiRespond",
   gitChanges: "git:changes",
   gitPatch: "git:patch",
+  gitBranch: "git:branch",
   piLocate: "pi:locate",
   // main -> renderer (send)
   piEvent: "pi:event",

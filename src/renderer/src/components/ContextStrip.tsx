@@ -1,0 +1,61 @@
+import { useEffect, useState } from "react";
+import { GitBranch } from "lucide-react";
+import { useApp } from "@/store/app";
+import { bridge } from "@/lib/bridge";
+import { Tip } from "@/components/ui";
+import { cn, formatCost, formatTokens } from "@/lib/utils";
+
+function ContextMeter({ percent, tokens, window }: { percent: number | null; tokens: number | null; window: number }) {
+  const p = percent ?? 0;
+  const tone = p >= 80 ? "bg-danger" : p >= 60 ? "bg-warn" : "bg-fg-muted";
+  return (
+    <Tip label={`Context: ${formatTokens(tokens)} of ${formatTokens(window)} tokens${percent == null ? " (estimating)" : ""}`}>
+      <div className="flex items-center gap-1.5 tabular-nums">
+        <div className="h-1.5 w-14 overflow-hidden rounded-full bg-border-strong/60">
+          <div className={cn("h-full rounded-full transition-[width] duration-300", tone)} style={{ width: `${Math.min(100, p)}%` }} />
+        </div>
+        <span>{percent == null ? "–" : `${Math.round(p)}%`}</span>
+      </div>
+    </Tip>
+  );
+}
+
+/** The thin line under the composer: branch, context meter, cost, and whatever Extensions publish as status. */
+export function ContextStrip({ sessionKey }: { sessionKey: string }) {
+  const session = useApp((s) => s.sessions[sessionKey]);
+  const [branch, setBranch] = useState<string | null>(null);
+  const cwd = session?.cwd;
+
+  useEffect(() => {
+    if (!cwd) return;
+    let cancelled = false;
+    const load = () => void bridge.git.branch(cwd).then((b) => !cancelled && setBranch(b));
+    load();
+    const off = bridge.events.onGitChanged((changed) => changed === cwd && load());
+    return () => {
+      cancelled = true;
+      off();
+    };
+  }, [cwd]);
+
+  if (!session) return null;
+  const statuses = Object.values(session.statuses);
+
+  return (
+    <div className="flex h-7 items-center gap-3 px-2 text-[11px] text-fg-faint">
+      {branch && (
+        <span className="flex items-center gap-1">
+          <GitBranch className="h-3 w-3" strokeWidth={2} />
+          {branch}
+        </span>
+      )}
+      {session.stats?.contextUsage && (
+        <ContextMeter percent={session.stats.contextUsage.percent} tokens={session.stats.contextUsage.tokens} window={session.stats.contextUsage.contextWindow} />
+      )}
+      {session.stats && session.stats.cost > 0 && <span className="tabular-nums">{formatCost(session.stats.cost)}</span>}
+      <div className="selectable min-w-0 flex-1 truncate text-right font-mono" title={statuses.join("\n")}>
+        {statuses.join("  ·  ")}
+      </div>
+    </div>
+  );
+}

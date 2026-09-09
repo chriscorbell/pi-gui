@@ -5,7 +5,7 @@
 /* Light palette on :root, dark palette on .dark. One accent, one neutral family (zinc). */
 :root {
   --bg: oklch(0.985 0.002 250);
-  --bg-sunken: oklch(0.965 0.003 250);
+  --bg-sunken: oklch(0.985 0.002 250);
   --surface: oklch(0.995 0.001 250);
   --surface-raised: oklch(1 0 0);
   --border: oklch(0 0 0 / 0.09);
@@ -32,12 +32,12 @@
 }
 
 .dark {
-  --bg: oklch(0.165 0.004 260);
-  --bg-sunken: oklch(0.145 0.004 260);
-  --surface: oklch(0.19 0.004 260);
-  --surface-raised: oklch(0.225 0.005 260);
-  --border: oklch(1 0 0 / 0.07);
-  --border-strong: oklch(1 0 0 / 0.13);
+  --bg: oklch(0.145 0.003 260);
+  --bg-sunken: oklch(0.145 0.003 260);
+  --surface: oklch(0.175 0.004 260);
+  --surface-raised: oklch(0.215 0.005 260);
+  --border: oklch(1 0 0 / 0.06);
+  --border-strong: oklch(1 0 0 / 0.12);
   --fg: oklch(0.92 0.005 260);
   --fg-muted: oklch(0.66 0.008 260);
   --fg-faint: oklch(0.5 0.008 260);
@@ -50,7 +50,7 @@
   --danger-soft: oklch(0.7 0.18 25 / 0.16);
   --hover: oklch(1 0 0 / 0.05);
   --active: oklch(1 0 0 / 0.09);
-  --code-bg: oklch(0.14 0.004 260);
+  --code-bg: oklch(0.12 0.003 260);
   --shadow: 0 12px 36px oklch(0 0 0 / 0.5), 0 1px 2px oklch(0 0 0 / 0.4);
   color-scheme: dark;
 }

@@ -6,7 +6,7 @@ import { IPC, type ExtensionUiResponse, type GuiSettings, type ChangedFile } fro
 import { loadSettings, saveSettings } from "./settings";
 import { scanProjects, SESSIONS_DIR } from "./sessions/scan";
 import { SessionHost } from "./pi/session-host";
-import { changedFiles, patchFor } from "./git";
+import { changedFiles, currentBranch, patchFor } from "./git";
 import { locatePi } from "./pi/locate";
 
 const host = new SessionHost();
@@ -35,8 +35,8 @@ function createWindow(): void {
     minHeight: 560,
     show: false,
     titleBarStyle: "hiddenInset",
-    trafficLightPosition: { x: 14, y: 14 },
-    backgroundColor: nativeTheme.shouldUseDarkColors ? "#0b0b0c" : "#fafafa",
+    trafficLightPosition: { x: 16, y: 16 },
+    backgroundColor: nativeTheme.shouldUseDarkColors ? "#101011" : "#fafafa",
     webPreferences: {
       preload: join(__dirname, "../preload/index.mjs"),
       sandbox: false,
@@ -144,6 +144,7 @@ function registerIpc(): void {
 
   ipcMain.handle(IPC.gitChanges, (_e, cwd: string) => changedFiles(cwd));
   ipcMain.handle(IPC.gitPatch, (_e, cwd: string, file: ChangedFile) => patchFor(cwd, file));
+  ipcMain.handle(IPC.gitBranch, (_e, cwd: string) => currentBranch(cwd));
 }
 
 function listProjectFiles(cwd: string): Promise<string[]> {

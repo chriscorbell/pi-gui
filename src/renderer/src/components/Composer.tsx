@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowUp, Square, X } from "lucide-react";
+import { ArrowUp, Brain, ChevronDown, Cpu, Paperclip, Square, X } from "lucide-react";
 import { useApp } from "@/store/app";
 import { bridge } from "@/lib/bridge";
 import { buildTranscript, promptHistory } from "@/lib/transcript";
-import { Kbd } from "@/components/ui";
-import { cn } from "@/lib/utils";
+import { Menu, MenuContent, MenuItem, MenuLabel, MenuTrigger } from "@/components/ui";
+import { cn, formatTokens } from "@/lib/utils";
 
 interface Attachment {
   id: number;
@@ -49,6 +49,9 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
   const setDraft = useApp((s) => s.setDraft);
   const clearEditorText = useApp((s) => s.clearEditorText);
   const pushToast = useApp((s) => s.pushToast);
+  const setModel = useApp((s) => s.setModel);
+  const setThinking = useApp((s) => s.setThinking);
+  const fileInput = useRef<HTMLInputElement>(null);
 
   const [text, setText] = useState(session?.draft ?? "");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -217,11 +220,18 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
   };
 
   const supportsImages = session?.state?.model?.input?.includes("image") ?? true;
+  const model = session?.state?.model;
+  const byProvider = new Map<string, NonNullable<typeof session>["models"]>();
+  for (const m of session?.models ?? []) {
+    const list = byProvider.get(m.provider) ?? [];
+    list.push(m);
+    byProvider.set(m.provider, list);
+  }
 
   return (
     <div
       className={cn(
-        "relative rounded-lg border bg-surface transition-[border-color,box-shadow] duration-150 focus-within:border-border-strong focus-within:shadow-[0_0_0_3px_var(--accent-soft)]",
+        "relative rounded-xl border bg-surface shadow-[0_1px_2px_oklch(0_0_0/0.2)] transition-[border-color,box-shadow] duration-150 focus-within:border-border-strong",
         "border-border",
       )}
       onDragOver={(e) => e.preventDefault()}
@@ -277,7 +287,7 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
         ref={ref}
         value={text}
         rows={1}
-        placeholder={working ? "Queue a follow-up for when this turn ends" : "Message pi. / for commands, @ for files"}
+        placeholder={working ? "Queue a follow-up for when this turn ends" : "Ask for changes, send follow-ups, or attach images"}
         onChange={(e) => {
           setHistoryIndex(null);
           updateText(e.target.value, e.target.selectionStart ?? e.target.value.length);
@@ -293,13 +303,47 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
         className="selectable block w-full resize-none bg-transparent px-3.5 pt-3 pb-2 text-[13.5px] leading-[1.55] text-fg placeholder:text-fg-faint focus:outline-none"
       />
       <div className="flex items-center justify-between px-2 pb-2">
-        <div className="pl-1.5 text-[11px] text-fg-faint">
-          <Kbd>Enter</Kbd> send <span className="mx-1">·</span> <Kbd>Shift</Kbd>+<Kbd>Enter</Kbd> newline
-          {working && (
-            <>
-              <span className="mx-1">·</span> <Kbd>Esc</Kbd> abort
-            </>
-          )}
+        <div className="flex items-center gap-0.5">
+          <Menu>
+            <MenuTrigger asChild>
+              <button className="no-drag flex h-7 items-center gap-1.5 rounded-md px-2 text-[12px] text-fg-muted transition-colors hover:bg-hover hover:text-fg">
+                <Cpu className="h-3.5 w-3.5" strokeWidth={1.75} />
+                <span className="max-w-[220px] truncate">{model ? model.name || model.id : "No model"}</span>
+                <ChevronDown className="h-3 w-3 text-fg-faint" strokeWidth={2} />
+              </button>
+            </MenuTrigger>
+            <MenuContent align="start" className="max-h-[360px] overflow-y-auto">
+              {[...byProvider.entries()].map(([provider, models]) => (
+                <div key={provider}>
+                  <MenuLabel>{provider}</MenuLabel>
+                  {models.map((m) => (
+                    <MenuItem key={m.id} onSelect={() => void setModel(sessionKey, m.provider, m.id)} className={cn(model?.id === m.id && model.provider === m.provider && "text-accent")}>
+                      <span className="min-w-0 flex-1 truncate">{m.name || m.id}</span>
+                      <span className="text-[10.5px] text-fg-faint">{formatTokens(m.contextWindow)}</span>
+                    </MenuItem>
+                  ))}
+                </div>
+              ))}
+              {(session?.models.length ?? 0) === 0 && <MenuItem disabled>No models configured</MenuItem>}
+            </MenuContent>
+          </Menu>
+          <Menu>
+            <MenuTrigger asChild>
+              <button className="no-drag flex h-7 items-center gap-1.5 rounded-md px-2 text-[12px] text-fg-muted transition-colors hover:bg-hover hover:text-fg">
+                <Brain className="h-3.5 w-3.5" strokeWidth={1.75} />
+                <span className="capitalize">{session?.state?.thinkingLevel ?? "off"}</span>
+                <ChevronDown className="h-3 w-3 text-fg-faint" strokeWidth={2} />
+              </button>
+            </MenuTrigger>
+            <MenuContent align="start">
+              <MenuLabel>Thinking</MenuLabel>
+              {(session?.thinkingLevels ?? []).map((l) => (
+                <MenuItem key={l} onSelect={() => void setThinking(sessionKey, l)} className={cn("capitalize", session?.state?.thinkingLevel === l && "text-accent")}>
+                  {l}
+                </MenuItem>
+              ))}
+            </MenuContent>
+          </Menu>
         </div>
         <div className="flex items-center gap-1">
           {working && (
@@ -310,11 +354,33 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
               <Square className="h-3 w-3 fill-current" strokeWidth={2} /> Stop
             </button>
           )}
+          {supportsImages && (
+            <>
+              <input
+                ref={fileInput}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => {
+                  if (e.target.files) void addFiles(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+              <button
+                onClick={() => fileInput.current?.click()}
+                aria-label="Attach image"
+                className="inline-flex h-7 w-7 items-center justify-center rounded-md text-fg-muted transition-colors hover:bg-hover hover:text-fg"
+              >
+                <Paperclip className="h-4 w-4" strokeWidth={1.75} />
+              </button>
+            </>
+          )}
           <button
             onClick={() => void send()}
             disabled={!canSend}
             aria-label="Send"
-            className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-accent text-accent-fg transition-[opacity,transform] duration-100 hover:brightness-110 active:scale-95 disabled:opacity-30"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-accent text-accent-fg transition-[opacity,transform] duration-100 hover:brightness-110 active:scale-95 disabled:opacity-30"
           >
             <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
           </button>

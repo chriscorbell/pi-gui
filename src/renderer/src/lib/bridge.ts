@@ -40,6 +40,7 @@ export const bridge = {
   git: {
     changes: (cwd: string) => invoke(IPC.gitChanges, cwd) as Promise<ChangedFile[]>,
     patch: (cwd: string, file: ChangedFile) => invoke(IPC.gitPatch, cwd, file) as Promise<string>,
+    branch: (cwd: string) => invoke(IPC.gitBranch, cwd) as Promise<string | null>,
   },
   events: {
     onPiEvent: (cb: (p: { key: string; event: PiEvent }) => void) => on(IPC.piEvent, cb as (p: unknown) => void),

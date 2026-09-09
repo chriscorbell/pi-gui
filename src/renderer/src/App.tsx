@@ -3,7 +3,6 @@ import { useApp } from "@/store/app";
 import { useTheme } from "@/hooks/useTheme";
 import { useShortcuts } from "@/hooks/useShortcuts";
 import { TooltipProvider } from "@/components/ui";
-import { TitleBar } from "@/components/TitleBar";
 import { Sidebar } from "@/components/Sidebar";
 import { Thread } from "@/components/Thread";
 import { DiffPanel } from "@/components/DiffPanel";
@@ -71,7 +70,6 @@ export function App() {
   return (
     <TooltipProvider>
       <div className="flex h-full flex-col bg-bg text-fg">
-        <TitleBar />
         <div className="flex min-h-0 flex-1">
           {!settings.sidebarCollapsed && (
             <>
