@@ -1,6 +1,7 @@
 import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { EventEmitter } from "node:events";
 import type { PiCommandResult, PiEvent } from "@shared/contract";
+import { piEnv } from "./locate";
 
 interface Pending {
   resolve: (r: PiCommandResult) => void;
@@ -28,7 +29,7 @@ export class RpcClient extends EventEmitter<RpcClientEvents> {
     super();
     this.proc = spawn(piPath, ["--mode", "rpc", "--approve", ...args], {
       cwd,
-      env: { ...process.env, PI_GUI: "1" },
+      env: piEnv(piPath),
       stdio: ["pipe", "pipe", "pipe"],
     });
     this.proc.stdout.setEncoding("utf8");
