@@ -18,8 +18,6 @@ Shipped alongside: Stop retrying button, Compact with optional instructions, spl
 ## Decided against
 
 Tool approval gate, project trust dialog, code signing, sidebar row height change.
+## Decided against
 
-## Open questions
-
-- [ ] Per-turn diff checkpoints: still to be explained and decided
-- [ ] Agent shell isolation from the interactive zsh setup (the eza `ls` alias): recommendation pending Chris's call
+Per-turn diff checkpoints. The agent shell no longer inherits interactive zsh aliases (the `shellCommandPrefix` line was removed from the pi settings in llm-server on 2026-09-09).
