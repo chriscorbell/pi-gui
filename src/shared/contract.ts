@@ -244,6 +244,7 @@ export const IPC = {
   projectsChanged: "projects:changed",
   gitChanged: "git:changed",
   windowFocus: "window:focus",
+  menuCommand: "menu:command",
   terminalData: "terminal:data",
   terminalExit: "terminal:exit",
 } as const;

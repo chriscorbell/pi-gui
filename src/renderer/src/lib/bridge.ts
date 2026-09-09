@@ -55,6 +55,7 @@ export const bridge = {
     onProjectsChanged: (cb: () => void) => on(IPC.projectsChanged, cb),
     onGitChanged: (cb: (cwd: string) => void) => on(IPC.gitChanged, cb as (p: unknown) => void),
     onWindowFocus: (cb: (focused: boolean) => void) => on(IPC.windowFocus, cb as (p: unknown) => void),
+    onMenuCommand: (cb: (command: string) => void) => on(IPC.menuCommand, cb as (p: unknown) => void),
     onTerminalData: (cb: (p: { id: string; data: string }) => void) => on(IPC.terminalData, cb as (p: unknown) => void),
     onTerminalExit: (cb: (p: { id: string; exitCode: number }) => void) => on(IPC.terminalExit, cb as (p: unknown) => void),
   },

@@ -9,6 +9,18 @@ import { SessionHost } from "./pi/session-host";
 import { changedFiles, currentBranch, patchFor } from "./git";
 import { locatePi } from "./pi/locate";
 import { TerminalHost } from "./terminal";
+import { installDockMenu, installMenu } from "./menu";
+
+// The dev binary is Electron.app, whose bundle name shows in the menu bar; the name here fixes
+// app.getName(), the About panel, the user-data folder, and the menu labels in both dev and packaged builds.
+app.setName("Pi");
+app.setAboutPanelOptions({
+  applicationName: "Pi",
+  applicationVersion: app.getVersion(),
+  version: "",
+  copyright: "MIT License",
+  credits: "A desktop client for the pi coding agent.",
+});
 
 const host = new SessionHost();
 const terminals = new TerminalHost();
@@ -192,6 +204,8 @@ app.whenReady().then(() => {
     app.dock?.setIcon(join(__dirname, "../../build/icon.png"));
   }
   applyTheme(loadSettings().theme);
+  installMenu(() => win);
+  installDockMenu(() => win);
   registerIpc();
   createWindow();
   watchSessions();

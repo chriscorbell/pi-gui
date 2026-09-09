@@ -1,5 +1,6 @@
 appId: com.chriscorbell.pi-gui
 productName: Pi
+copyright: MIT License
 directories:
   output: release
   buildResources: build
@@ -16,6 +17,11 @@ mac:
   hardenedRuntime: false
   gatekeeperAssess: false
   darkModeSupport: true
+  minimumSystemVersion: "13.0"
+  extendInfo:
+    CFBundleName: Pi
+    CFBundleDisplayName: Pi
+    NSHumanReadableCopyright: MIT License
 dmg:
   artifactName: Pi-${version}-${arch}.${ext}
 npmRebuild: true

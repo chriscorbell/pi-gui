@@ -289,6 +289,7 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
       )}
       <textarea
         ref={ref}
+        data-composer
         value={text}
         rows={1}
         placeholder={working ? "Queue a follow-up for when this turn ends" : "Ask for changes, send follow-ups, or attach images"}
