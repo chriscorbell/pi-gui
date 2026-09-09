@@ -27,3 +27,4 @@ mac:
 dmg:
   artifactName: Pi-${version}-${arch}.${ext}
 npmRebuild: true
+afterPack: build/after-pack.cjs

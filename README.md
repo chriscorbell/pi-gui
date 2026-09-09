@@ -6,6 +6,16 @@ A macOS desktop client for the [pi](https://github.com/earendil-works/pi-mono) c
 
 The app drives the `pi` you already have installed. It spawns `pi --mode rpc` per open session, so your models, settings, extensions, and slash commands work unchanged, and a session started here resumes with `pi -c` in a terminal.
 
+## Installing the DMG
+
+The app is ad-hoc signed, not notarized, so the first launch of a downloaded copy shows a Gatekeeper prompt. Open System Settings, Privacy & Security, and click Open Anyway, or clear the quarantine flag once:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/Pi.app
+```
+
+Updates the app installs itself never carry the flag, so this is a one-time step.
+
 ## Requirements
 
 - macOS on Apple silicon
