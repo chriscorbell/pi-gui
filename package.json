@@ -1,7 +1,7 @@
 {
   "name": "pi-gui",
   "productName": "Pi",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A macOS desktop client for the pi coding agent",
   "license": "MIT",
   "private": true,
@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@pierre/diffs": "1.4.1",
+    "@radix-ui/react-context-menu": "^2.3.7",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-switch": "^1.2.6",

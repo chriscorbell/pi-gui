@@ -9,6 +9,7 @@ import { RightPanel } from "@/components/RightPanel";
 import { Toasts } from "@/components/Toasts";
 import { SettingsSheet } from "@/components/SettingsSheet";
 import { DialogSheet } from "@/components/DialogSheet";
+import { SessionActionSheets } from "@/components/SessionActions";
 import { cn } from "@/lib/utils";
 
 function ResizeHandle({ side, onResize, onDone }: { side: "left" | "right"; onResize: (dx: number) => void; onDone: () => void }) {
@@ -108,6 +109,7 @@ export function App() {
         <Toasts />
         <SettingsSheet />
         <DialogSheet />
+        <SessionActionSheets />
       </div>
     </TooltipProvider>
   );

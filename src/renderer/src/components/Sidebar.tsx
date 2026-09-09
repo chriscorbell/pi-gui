@@ -4,6 +4,7 @@ import type { SessionStatus } from "@shared/contract";
 import { keyForPath, useApp } from "@/store/app";
 import { IconButton, Spinner } from "@/components/ui";
 import { Glyph } from "@/components/Logo";
+import { SessionContextMenu } from "@/components/SessionActions";
 import { cn, relativeTime } from "@/lib/utils";
 
 function StatusDot({ status }: { status: SessionStatus | "off" }) {
@@ -174,8 +175,8 @@ export function Sidebar() {
                     const selected = selectedKey === r.key;
                     const emphasized = status === "unread" || status === "needs-input";
                     return (
+                      <SessionContextMenu key={r.key} target={{ key: r.key, cwd, path: r.path, title: r.title ?? "Empty session" }}>
                       <button
-                        key={r.key}
                         onClick={() => {
                           if (sessions[r.key]) void selectSession(r.key);
                           else if (r.path) void openSession(cwd, r.path);
@@ -195,6 +196,7 @@ export function Sidebar() {
                           r.modifiedAt && <span className="shrink-0 text-[11.5px] tabular-nums text-fg-faint">{relativeTime(r.modifiedAt)}</span>
                         )}
                       </button>
+                      </SessionContextMenu>
                     );
                   })}
                 </div>
