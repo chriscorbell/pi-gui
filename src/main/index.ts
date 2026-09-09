@@ -125,7 +125,8 @@ function registerIpc(): void {
     host.select(key);
     watchGit(cwd);
     updateBadge();
-    if (key) saveSettings({ lastSessionKey: key });
+    // Remember the file path when known so the Session can be reopened after a restart.
+    if (key) saveSettings({ lastSessionKey: host.live(key)?.path ?? key });
   });
   ipcMain.handle(IPC.sessionLive, () => host.liveStates());
   ipcMain.handle(IPC.sessionTrash, async (_e, key: string, path: string) => {

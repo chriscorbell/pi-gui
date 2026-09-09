@@ -60,6 +60,8 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
   const [files, setFiles] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number | null>(null);
   const ref = useRef<HTMLTextAreaElement>(null);
+  const textRef = useRef(text);
+  textRef.current = text;
 
   const working = live?.status === "working";
   const canSend = (text.trim().length > 0 || attachments.length > 0) && live?.running;
@@ -72,7 +74,8 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
     setHistoryIndex(null);
     ref.current?.focus();
   }, [sessionKey]);
-  useEffect(() => () => setDraft(sessionKey, text), [sessionKey, text, setDraft]);
+  // Persist the draft only when the composer unmounts or the Session changes, never per keystroke.
+  useEffect(() => () => setDraft(sessionKey, textRef.current), [sessionKey, setDraft]);
 
   // An Extension asked to prefill the editor.
   useEffect(() => {
@@ -147,6 +150,7 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
     const body = text;
     const imgs = attachments.map((a) => ({ data: a.data, mimeType: a.mimeType }));
     setText("");
+    textRef.current = "";
     setAttachments([]);
     setPopup(null);
     setHistoryIndex(null);

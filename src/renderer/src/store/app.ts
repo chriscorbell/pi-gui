@@ -130,6 +130,8 @@ function emptySession(key: string, cwd: string, path: string | null): SessionDat
 }
 
 let toastSeq = 0;
+// StrictMode mounts App twice in dev; the bridge listeners must only ever be attached once.
+let initStarted = false;
 
 // Text deltas arrive many times per second. Buffer them and flush once per frame.
 const deltaBuffer = new Map<string, { index: number; kind: "text" | "thinking" | "toolArgs"; text: string }[]>();
@@ -197,10 +199,12 @@ export const useApp = create<AppState>((set, get) => {
       return;
     }
     const data = res.data;
-    patchSession(key, (cur) => ({
-      entries: since ? [...cur.entries, ...data.entries] : data.entries,
-      leafId: data.leafId,
-    }));
+    patchSession(key, (cur) => {
+      if (!since) return { entries: data.entries, leafId: data.leafId };
+      // Two refreshes can overlap (message_end and turn_end); never append an id twice.
+      const seen = new Set(cur.entries.map((e) => e.id));
+      return { entries: [...cur.entries, ...data.entries.filter((e) => !seen.has(e.id))], leafId: data.leafId };
+    });
   };
 
   const refreshState = async (key: string) => {
@@ -388,6 +392,8 @@ export const useApp = create<AppState>((set, get) => {
     settingsOpen: false,
 
     init: async () => {
+      if (initStarted) return;
+      initStarted = true;
       const [settings, projects, liveList] = await Promise.all([bridge.settings.get(), bridge.projects.list(), bridge.session.live()]);
       const live: Record<string, SessionLiveState> = {};
       for (const l of liveList) live[l.key] = l;
