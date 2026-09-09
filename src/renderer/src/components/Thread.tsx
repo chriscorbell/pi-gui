@@ -175,23 +175,44 @@ const heroShown = new Set<string>();
  * fades in. The hero's own entrance plays once per Session, not on every return to the empty state.
  */
 function useHeroHandoff(sessionKey: string, empty: boolean) {
-  const [state, setState] = useState<{ key: string; showHero: boolean; leaving: boolean }>({ key: sessionKey, showHero: empty, leaving: false });
+  const [showHero, setShowHero] = useState(empty);
+  const [leaving, setLeaving] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const heroAnimate = !heroShown.has(sessionKey);
   useEffect(() => {
     if (empty) heroShown.add(sessionKey);
   }, [sessionKey, empty]);
+  // Session switch: no transition, just the right layout.
   useEffect(() => {
-    if (state.key !== sessionKey) {
-      setState({ key: sessionKey, showHero: empty, leaving: false });
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = null;
+    setLeaving(false);
+    setShowHero(empty);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionKey]);
+  useEffect(() => {
+    if (empty) {
+      if (timer.current) clearTimeout(timer.current);
+      timer.current = null;
+      setLeaving(false);
+      setShowHero(true);
       return;
     }
-    if (empty && !state.showHero) setState({ key: sessionKey, showHero: true, leaving: false });
-    if (!empty && state.showHero && !state.leaving) {
-      setState({ key: sessionKey, showHero: true, leaving: true });
-      const t = setTimeout(() => setState({ key: sessionKey, showHero: false, leaving: false }), 180);
-      return () => clearTimeout(t);
-    }
-  }, [sessionKey, empty, state.key, state.showHero, state.leaving]);
-  const current = state.key === sessionKey ? state : { showHero: empty, leaving: false };
-  return { showHero: current.showHero, heroLeaving: current.leaving, heroAnimate };
+    // Not empty: if the hero is up and not already leaving, fade it out, then switch.
+    setShowHero((hero) => {
+      if (hero && !timer.current) {
+        setLeaving(true);
+        timer.current = setTimeout(() => {
+          timer.current = null;
+          setLeaving(false);
+          setShowHero(false);
+        }, 180);
+      }
+      return hero;
+    });
+  }, [empty]);
+  useEffect(() => () => {
+    if (timer.current) clearTimeout(timer.current);
+  }, []);
+  return { showHero, heroLeaving: leaving, heroAnimate };
 }
