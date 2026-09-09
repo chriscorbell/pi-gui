@@ -59,12 +59,11 @@ export function Sidebar() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="drag flex h-[52px] shrink-0 items-center justify-between pl-[84px] pr-2">
+      <div className="drag flex h-[52px] shrink-0 items-center gap-1.5 pl-[84px] pr-2">
         <IconButton label="Hide sidebar (Cmd+B)" onClick={() => void update({ sidebarCollapsed: true })}>
           <PanelLeft className="h-4 w-4" strokeWidth={1.75} />
         </IconButton>
-        <Glyph className="h-[18px] w-[18px] text-fg" />
-        <span className="w-7" />
+        <Glyph className="h-[22px] w-[22px] text-fg" />
       </div>
 
       <div className="px-2">
