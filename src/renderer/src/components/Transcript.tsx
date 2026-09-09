@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 
 const Markdown = memo(function Markdown({ text }: { text: string }) {
   return (
-    <div className="prose-pi text-[13.5px] leading-[1.6]">
+    <div className="prose-pi text-[14.5px] leading-[1.6]">
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
     </div>
   );
@@ -24,7 +24,7 @@ function Thinking({ text, streaming }: { text: string; streaming: boolean }) {
   const expanded = open ?? defaultExpanded;
   if (!expanded) {
     return (
-      <button onClick={() => setOpen(true)} className="flex items-center gap-2 py-1 text-[12px] text-fg-muted transition-colors hover:text-fg">
+      <button onClick={() => setOpen(true)} className="flex items-center gap-2 py-1 text-[13px] text-fg-muted transition-colors hover:text-fg">
         {streaming ? <Spinner /> : <ChevronRight className="h-3.5 w-3.5" strokeWidth={2} />}
         <span>{streaming ? "Thinking" : "Thought"}</span>
         {!streaming && text && <span className="max-w-[420px] truncate text-fg-faint">{text.replace(/\s+/g, " ").slice(0, 120)}</span>}
@@ -32,8 +32,8 @@ function Thinking({ text, streaming }: { text: string; streaming: boolean }) {
     );
   }
   return (
-    <div onClick={() => setOpen(false)} className="cursor-pointer rounded-md border border-border bg-bg-sunken px-3 py-2 text-[12.5px] leading-relaxed text-fg-muted">
-      <div className="mb-1 flex items-center gap-2 text-[11.5px] text-fg-faint">
+    <div onClick={() => setOpen(false)} className="cursor-pointer rounded-md border border-border bg-bg-sunken px-3 py-2 text-[13.5px] leading-relaxed text-fg-muted">
+      <div className="mb-1 flex items-center gap-2 text-[12.5px] text-fg-faint">
         {streaming ? <Spinner /> : <ChevronRight className="h-3.5 w-3.5 rotate-90" strokeWidth={2} />}
         {streaming ? "Thinking" : "Thought"}
       </div>
@@ -83,11 +83,11 @@ function AssistantItem({ message, results, toolRuns }: { message: AssistantMsg; 
     <div className="py-2">
       <AssistantBlocks content={message.content} results={results} toolRuns={toolRuns} streaming={false} />
       {message.stopReason === "error" && (
-        <div className="selectable mt-2 rounded-md border border-danger/30 bg-danger-soft px-3 py-2 text-[12.5px] text-danger">
+        <div className="selectable mt-2 rounded-md border border-danger/30 bg-danger-soft px-3 py-2 text-[13.5px] text-danger">
           {message.errorMessage ?? "The model returned an error."}
         </div>
       )}
-      {message.stopReason === "aborted" && <div className="mt-1 text-[11.5px] text-fg-faint">Aborted</div>}
+      {message.stopReason === "aborted" && <div className="mt-1 text-[12.5px] text-fg-faint">Aborted</div>}
     </div>
   );
 }
@@ -95,10 +95,10 @@ function AssistantItem({ message, results, toolRuns }: { message: AssistantMsg; 
 function UserItem({ text, images }: { text: string; images: number }) {
   return (
     <div className="flex justify-end py-2">
-      <div className="selectable max-w-[85%] rounded-lg bg-surface-raised border border-border px-3.5 py-2 text-[13.5px] leading-[1.55] whitespace-pre-wrap break-words">
+      <div className="selectable max-w-[85%] rounded-lg bg-surface-raised border border-border px-3.5 py-2 text-[14.5px] leading-[1.55] whitespace-pre-wrap break-words">
         {text}
         {images > 0 && (
-          <div className="mt-1.5 flex items-center gap-1 text-[11.5px] text-fg-muted">
+          <div className="mt-1.5 flex items-center gap-1 text-[12.5px] text-fg-muted">
             <ImageIcon className="h-3.5 w-3.5" strokeWidth={1.75} /> {images} image{images > 1 ? "s" : ""}
           </div>
         )}
@@ -110,7 +110,7 @@ function UserItem({ text, images }: { text: string; images: number }) {
 function BashItem({ command, output, exitCode }: { command: string; output: string; exitCode?: number }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="my-1 rounded-md border border-border bg-bg-sunken font-mono text-[12px]">
+    <div className="my-1 rounded-md border border-border bg-bg-sunken font-mono text-[13px]">
       <button onClick={() => setOpen(!open)} className="flex w-full items-center gap-2 px-3 py-1.5 text-left">
         <Terminal className="h-3.5 w-3.5 shrink-0 text-fg-muted" strokeWidth={1.75} />
         <span className="min-w-0 flex-1 truncate">{command}</span>
@@ -125,7 +125,7 @@ function CompactionItem({ summary, tokensBefore }: { summary: string; tokensBefo
   const [open, setOpen] = useState(false);
   return (
     <div className="my-3">
-      <button onClick={() => setOpen(!open)} className="flex w-full items-center gap-2 text-[11.5px] text-fg-faint">
+      <button onClick={() => setOpen(!open)} className="flex w-full items-center gap-2 text-[12.5px] text-fg-faint">
         <span className="h-px flex-1 bg-border" />
         <Layers className="h-3.5 w-3.5" strokeWidth={1.75} />
         <span>Context compacted from {Math.round(tokensBefore / 1000)}K tokens</span>
@@ -154,7 +154,7 @@ export function Transcript({
   working: boolean;
 }) {
   if (items.length === 0 && !partial) {
-    return <div className="py-16 text-center text-[12.5px] text-fg-faint">Send a message to start.</div>;
+    return <div className="py-16 text-center text-[13.5px] text-fg-faint">Send a message to start.</div>;
   }
   return (
     <div className="flex flex-col">
@@ -170,14 +170,14 @@ export function Transcript({
             return <CompactionItem key={item.id} summary={item.summary} tokensBefore={item.tokensBefore} />;
           case "custom":
             return (
-              <div key={item.id} className="my-1 rounded-md border border-border bg-bg-sunken px-3 py-2 text-[12.5px]">
-                <div className="mb-0.5 text-[10.5px] uppercase tracking-wide text-fg-faint">{item.customType}</div>
+              <div key={item.id} className="my-1 rounded-md border border-border bg-bg-sunken px-3 py-2 text-[13.5px]">
+                <div className="mb-0.5 text-[11.5px] uppercase tracking-wide text-fg-faint">{item.customType}</div>
                 <Markdown text={item.text} />
               </div>
             );
           case "note":
             return (
-              <div key={item.id} className="py-1 text-center text-[11px] text-fg-faint">
+              <div key={item.id} className="py-1 text-center text-[12px] text-fg-faint">
                 {item.text}
               </div>
             );
@@ -189,7 +189,7 @@ export function Transcript({
         </div>
       )}
       {working && !partial && (
-        <div className="flex items-center gap-2 py-3 text-[12px] text-fg-muted">
+        <div className="flex items-center gap-2 py-3 text-[13px] text-fg-muted">
           <Spinner /> Waiting for the model
         </div>
       )}

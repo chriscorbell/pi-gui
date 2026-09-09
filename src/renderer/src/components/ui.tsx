@@ -20,7 +20,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
       ref={ref}
       className={cn(
         "no-drag inline-flex items-center justify-center gap-1.5 rounded-md font-medium whitespace-nowrap transition-[background-color,transform,opacity] duration-100 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50",
-        size === "sm" ? "h-7 px-2.5 text-[12px]" : "h-8 px-3 text-[13px]",
+        size === "sm" ? "h-7 px-2.5 text-[13px]" : "h-8 px-3 text-[14px]",
         variant === "default" && "border border-border-strong bg-surface-raised text-fg hover:bg-hover",
         variant === "primary" && "bg-accent text-accent-fg hover:brightness-110",
         variant === "ghost" && "text-fg-muted hover:bg-hover hover:text-fg",
@@ -62,7 +62,7 @@ export function Tip({ label, children, side = "bottom" }: { label: string; child
         <Tooltip.Content
           side={side}
           sideOffset={6}
-          className="anim-fade-in z-50 rounded-md border border-border bg-surface-raised px-2 py-1 text-[11px] text-fg shadow-[var(--shadow)]"
+          className="anim-fade-in z-50 rounded-md border border-border bg-surface-raised px-2 py-1 text-[12px] text-fg shadow-[var(--shadow)]"
         >
           {label}
         </Tooltip.Content>
@@ -77,7 +77,7 @@ export function Spinner({ className }: { className?: string }) {
 
 export function Kbd({ children }: { children: React.ReactNode }) {
   return (
-    <kbd className="rounded border border-border-strong bg-bg-sunken px-1 font-sans text-[10px] text-fg-muted">
+    <kbd className="rounded border border-border-strong bg-bg-sunken px-1 font-sans text-[11px] text-fg-muted">
       {children}
     </kbd>
   );
@@ -110,7 +110,7 @@ export function MenuItem({ className, ...props }: DropdownMenu.DropdownMenuItemP
   return (
     <DropdownMenu.Item
       className={cn(
-        "flex cursor-default select-none items-center gap-2 rounded-md px-2 py-1.5 text-[12.5px] text-fg outline-none data-[highlighted]:bg-hover data-[disabled]:opacity-40",
+        "flex select-none items-center gap-2 rounded-md px-2 py-1.5 text-[13.5px] text-fg outline-none data-[highlighted]:bg-hover data-[disabled]:opacity-40",
         className,
       )}
       {...props}
@@ -119,7 +119,7 @@ export function MenuItem({ className, ...props }: DropdownMenu.DropdownMenuItemP
 }
 
 export function MenuLabel({ children }: { children: React.ReactNode }) {
-  return <DropdownMenu.Label className="px-2 pt-1.5 pb-1 text-[10.5px] font-medium uppercase tracking-wide text-fg-faint">{children}</DropdownMenu.Label>;
+  return <DropdownMenu.Label className="px-2 pt-1.5 pb-1 text-[11.5px] font-medium uppercase tracking-wide text-fg-faint">{children}</DropdownMenu.Label>;
 }
 
 export function MenuSeparator() {
@@ -137,7 +137,7 @@ export function Sheet({ open, onOpenChange, title, children, width = 440 }: { op
           style={{ width }}
           className="anim-fade-up fixed top-1/2 left-1/2 z-50 max-h-[80vh] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-border bg-surface-raised p-5 shadow-[var(--shadow)] focus:outline-none"
         >
-          <Dialog.Title className="mb-4 text-[14px] font-semibold">{title}</Dialog.Title>
+          <Dialog.Title className="mb-4 text-[15px] font-semibold">{title}</Dialog.Title>
           {children}
         </Dialog.Content>
       </Dialog.Portal>
@@ -162,8 +162,8 @@ export function Field({ label, hint, children }: { label: string; hint?: string;
   return (
     <div className="flex items-center justify-between gap-4 py-2.5">
       <div className="min-w-0">
-        <div className="text-[13px]">{label}</div>
-        {hint && <div className="text-[11.5px] text-fg-muted">{hint}</div>}
+        <div className="text-[14px]">{label}</div>
+        {hint && <div className="text-[12.5px] text-fg-muted">{hint}</div>}
       </div>
       <div className="shrink-0">{children}</div>
     </div>
@@ -175,7 +175,7 @@ export function Select<T extends string>({ value, options, onChange }: { value: 
     <select
       value={value}
       onChange={(e) => onChange(e.target.value as T)}
-      className="h-7 rounded-md border border-border-strong bg-surface-raised px-2 text-[12.5px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+      className="h-7 rounded-md border border-border-strong bg-surface-raised px-2 text-[13.5px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
     >
       {options.map((o) => (
         <option key={o.value} value={o.value}>

@@ -25,7 +25,7 @@ export function MainHeader() {
           <PanelLeft className="h-4 w-4" strokeWidth={1.75} />
         </IconButton>
       )}
-      <div className="flex min-w-0 flex-1 items-center gap-2 text-[13px]">
+      <div className="flex min-w-0 flex-1 items-center gap-2 text-[14px]">
         {session && (
           <>
             <Braces className="h-3.5 w-3.5 shrink-0 text-fg-faint" strokeWidth={1.75} />

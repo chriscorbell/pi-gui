@@ -63,7 +63,7 @@ function tail(text: string, lines: number): string {
 
 function DiffView({ diff }: { diff: string }) {
   return (
-    <pre className="selectable max-h-[420px] overflow-auto px-3 py-2 font-mono text-[11.5px] leading-[1.5]">
+    <pre className="selectable max-h-[420px] overflow-auto px-3 py-2 font-mono text-[12.5px] leading-[1.5]">
       {diff.split("\n").map((line, i) => {
         const tone = line.startsWith("+") ? "bg-ok/12 text-fg" : line.startsWith("-") ? "bg-danger/12 text-fg" : line.startsWith("@@") ? "text-accent" : "text-fg-muted";
         return (
@@ -92,27 +92,27 @@ export function ToolCallRow({ call, result, run, pendingArgs }: { call: ToolCall
     <div className={cn("rounded-md border bg-bg-sunken", isError ? "border-danger/40" : "border-border")}>
       <button
         onClick={() => hasBody && setOpen(!expanded)}
-        className={cn("flex w-full items-center gap-2 px-2.5 py-1.5 text-left text-[12px]", hasBody && "cursor-pointer")}
+        className={cn("flex w-full items-center gap-2 px-2.5 py-1.5 text-left text-[13px]", hasBody && "cursor-pointer")}
       >
         <span className="flex h-4 w-4 shrink-0 items-center justify-center">
           {running || preparing ? <Spinner /> : isError ? <X className="h-3.5 w-3.5 text-danger" strokeWidth={2.25} /> : <Icon className="h-3.5 w-3.5 text-fg-muted" strokeWidth={1.75} />}
         </span>
         <span className="shrink-0 font-medium text-fg-muted">{call.name}</span>
-        <span className="min-w-0 flex-1 truncate font-mono text-[11.5px] text-fg">{preparing ? "preparing" : summary(call)}</span>
+        <span className="min-w-0 flex-1 truncate font-mono text-[12.5px] text-fg">{preparing ? "preparing" : summary(call)}</span>
         {result && !isError && call.name !== "edit" && <Check className="h-3.5 w-3.5 shrink-0 text-fg-faint" strokeWidth={2} />}
         {hasBody && <ChevronRight className={cn("h-3.5 w-3.5 shrink-0 text-fg-faint transition-transform duration-150", expanded && "rotate-90")} strokeWidth={2} />}
       </button>
       {!expanded && running && resultText && call.name === "bash" && (
-        <pre className="max-h-20 overflow-hidden border-t border-border px-3 py-1.5 font-mono text-[11px] leading-[1.45] text-fg-muted whitespace-pre-wrap">{tail(resultText, 4)}</pre>
+        <pre className="max-h-20 overflow-hidden border-t border-border px-3 py-1.5 font-mono text-[12px] leading-[1.45] text-fg-muted whitespace-pre-wrap">{tail(resultText, 4)}</pre>
       )}
       {expanded && (
         <div className="border-t border-border">
           {diff ? (
             <DiffView diff={diff} />
           ) : call.name === "write" && typeof call.arguments.content === "string" ? (
-            <pre className="selectable max-h-[420px] overflow-auto px-3 py-2 font-mono text-[11.5px] leading-[1.5] text-fg-muted whitespace-pre-wrap">{call.arguments.content}</pre>
+            <pre className="selectable max-h-[420px] overflow-auto px-3 py-2 font-mono text-[12.5px] leading-[1.5] text-fg-muted whitespace-pre-wrap">{call.arguments.content}</pre>
           ) : (
-            <pre className={cn("selectable max-h-[420px] overflow-auto px-3 py-2 font-mono text-[11.5px] leading-[1.5] whitespace-pre-wrap", isError ? "text-danger" : "text-fg-muted")}>
+            <pre className={cn("selectable max-h-[420px] overflow-auto px-3 py-2 font-mono text-[12.5px] leading-[1.5] whitespace-pre-wrap", isError ? "text-danger" : "text-fg-muted")}>
               {resultText}
             </pre>
           )}

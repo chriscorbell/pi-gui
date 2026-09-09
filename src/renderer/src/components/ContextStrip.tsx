@@ -42,7 +42,7 @@ export function ContextStrip({ sessionKey }: { sessionKey: string }) {
   const statuses = Object.values(session.statuses);
 
   return (
-    <div className="flex h-7 items-center gap-3 px-2 text-[11px] text-fg-faint">
+    <div className="flex h-7 items-center gap-3 px-2 text-[12px] text-fg-faint">
       {branch && (
         <span className="flex items-center gap-1">
           <GitBranch className="h-3 w-3" strokeWidth={2} />

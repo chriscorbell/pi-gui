@@ -248,11 +248,11 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
                   key={c.name}
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyPopup(i)}
-                  className={cn("flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left text-[12.5px]", i === popupIndex ? "bg-hover" : "")}
+                  className={cn("flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left text-[13.5px]", i === popupIndex ? "bg-hover" : "")}
                 >
                   <span className="font-mono">/{c.name}</span>
                   <span className="min-w-0 flex-1 truncate text-fg-muted">{c.description}</span>
-                  <span className="text-[10.5px] text-fg-faint">{c.source}</span>
+                  <span className="text-[11.5px] text-fg-faint">{c.source}</span>
                 </button>
               ))
             : fileItems.map((f, i) => (
@@ -260,7 +260,7 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
                   key={f}
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyPopup(i)}
-                  className={cn("flex w-full items-center rounded-md px-2 py-1.5 text-left font-mono text-[12px]", i === popupIndex ? "bg-hover" : "")}
+                  className={cn("flex w-full items-center rounded-md px-2 py-1.5 text-left font-mono text-[13px]", i === popupIndex ? "bg-hover" : "")}
                 >
                   <span className="truncate">{f}</span>
                 </button>
@@ -300,13 +300,13 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
             void addFiles(imgs);
           }
         }}
-        className="selectable block w-full resize-none bg-transparent px-3.5 pt-3 pb-2 text-[13.5px] leading-[1.55] text-fg placeholder:text-fg-faint focus:outline-none"
+        className="selectable block w-full resize-none bg-transparent px-3.5 pt-3 pb-2 text-[14.5px] leading-[1.55] text-fg placeholder:text-fg-faint focus:outline-none"
       />
       <div className="flex items-center justify-between px-2 pb-2">
         <div className="flex items-center gap-0.5">
           <Menu>
             <MenuTrigger asChild>
-              <button className="no-drag flex h-7 items-center gap-1.5 rounded-md px-2 text-[12px] text-fg-muted transition-colors hover:bg-hover hover:text-fg">
+              <button className="no-drag flex h-7 items-center gap-1.5 rounded-md px-2 text-[13px] text-fg-muted transition-colors hover:bg-hover hover:text-fg">
                 <Cpu className="h-3.5 w-3.5" strokeWidth={1.75} />
                 <span className="max-w-[220px] truncate">{model ? model.name || model.id : "No model"}</span>
                 <ChevronDown className="h-3 w-3 text-fg-faint" strokeWidth={2} />
@@ -319,7 +319,7 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
                   {models.map((m) => (
                     <MenuItem key={m.id} onSelect={() => void setModel(sessionKey, m.provider, m.id)} className={cn(model?.id === m.id && model.provider === m.provider && "text-accent")}>
                       <span className="min-w-0 flex-1 truncate">{m.name || m.id}</span>
-                      <span className="text-[10.5px] text-fg-faint">{formatTokens(m.contextWindow)}</span>
+                      <span className="text-[11.5px] text-fg-faint">{formatTokens(m.contextWindow)}</span>
                     </MenuItem>
                   ))}
                 </div>
@@ -329,7 +329,7 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
           </Menu>
           <Menu>
             <MenuTrigger asChild>
-              <button className="no-drag flex h-7 items-center gap-1.5 rounded-md px-2 text-[12px] text-fg-muted transition-colors hover:bg-hover hover:text-fg">
+              <button className="no-drag flex h-7 items-center gap-1.5 rounded-md px-2 text-[13px] text-fg-muted transition-colors hover:bg-hover hover:text-fg">
                 <Brain className="h-3.5 w-3.5" strokeWidth={1.75} />
                 <span className="capitalize">{session?.state?.thinkingLevel ?? "off"}</span>
                 <ChevronDown className="h-3 w-3 text-fg-faint" strokeWidth={2} />
@@ -349,7 +349,7 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
           {working && (
             <button
               onClick={() => void abort(sessionKey)}
-              className="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-[12px] text-fg-muted transition-colors hover:bg-hover hover:text-fg"
+              className="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-[13px] text-fg-muted transition-colors hover:bg-hover hover:text-fg"
             >
               <Square className="h-3 w-3 fill-current" strokeWidth={2} /> Stop
             </button>

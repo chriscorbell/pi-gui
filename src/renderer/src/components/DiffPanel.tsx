@@ -56,7 +56,7 @@ export function DiffPanel() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="drag flex h-[52px] shrink-0 items-center gap-2 border-b border-border px-3 text-[12px] font-medium text-fg-muted">
+      <div className="drag flex h-[52px] shrink-0 items-center gap-2 border-b border-border px-3 text-[13px] font-medium text-fg-muted">
         <FileDiff className="h-3.5 w-3.5" strokeWidth={1.75} />
         <span className="flex-1">Changes</span>
         {loading && <Spinner />}
@@ -65,9 +65,9 @@ export function DiffPanel() {
         </IconButton>
       </div>
       {!cwd ? (
-        <div className="p-4 text-[12px] text-fg-faint">Select a session to see its working tree.</div>
+        <div className="p-4 text-[13px] text-fg-faint">Select a session to see its working tree.</div>
       ) : files.length === 0 ? (
-        <div className="p-4 text-[12px] text-fg-faint">No changes in the working tree.</div>
+        <div className="p-4 text-[13px] text-fg-faint">No changes in the working tree.</div>
       ) : (
         <>
           <div className="max-h-[38%] shrink-0 overflow-y-auto border-b border-border py-1">
@@ -78,7 +78,7 @@ export function DiffPanel() {
                   key={f.path}
                   onClick={() => setSelected(f.path)}
                   className={cn(
-                    "flex w-full items-center gap-2 px-3 py-1 text-left font-mono text-[11.5px] transition-colors",
+                    "flex w-full items-center gap-2 px-3 py-1 text-left font-mono text-[12.5px] transition-colors",
                     selected === f.path ? "bg-active text-fg" : "text-fg-muted hover:bg-hover hover:text-fg",
                   )}
                 >
@@ -104,7 +104,7 @@ export function DiffPanel() {
                 }}
               />
             ) : (
-              <div className="p-4 text-[12px] text-fg-faint">Binary or empty change.</div>
+              <div className="p-4 text-[13px] text-fg-faint">Binary or empty change.</div>
             )}
           </div>
         </>

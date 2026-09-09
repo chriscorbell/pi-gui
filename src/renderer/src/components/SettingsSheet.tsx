@@ -48,14 +48,14 @@ export function SettingsSheet() {
           />
         </Field>
         <div className="py-2.5">
-          <div className="text-[13px]">pi binary</div>
-          <div className="mb-2 text-[11.5px] text-fg-muted">{located ? `Found at ${located}` : "Not found on PATH. Enter the full path."}</div>
+          <div className="text-[14px]">pi binary</div>
+          <div className="mb-2 text-[12.5px] text-fg-muted">{located ? `Found at ${located}` : "Not found on PATH. Enter the full path."}</div>
           <input
             value={piPath}
             onChange={(e) => setPiPath(e.target.value)}
             onBlur={() => void update({ piPath: piPath.trim() || null })}
             placeholder="/opt/homebrew/bin/pi"
-            className="h-8 w-full rounded-md border border-border-strong bg-bg-sunken px-2 font-mono text-[12px] text-fg placeholder:text-fg-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+            className="h-8 w-full rounded-md border border-border-strong bg-bg-sunken px-2 font-mono text-[13px] text-fg placeholder:text-fg-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
           />
         </div>
       </div>

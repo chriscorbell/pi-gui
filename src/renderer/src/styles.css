@@ -92,7 +92,7 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
@@ -130,6 +130,15 @@ body {
 
 .selectable {
   user-select: text;
+}
+
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+[role="menuitem"],
+select,
+summary,
+a[href] {
+  cursor: pointer;
 }
 
 /* Markdown inside assistant messages */
@@ -189,7 +198,7 @@ body {
   border-radius: var(--radius);
   padding: 10px 12px;
   overflow-x: auto;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.5;
 }
 .prose-pi pre code {
@@ -295,5 +304,5 @@ body {
 /* @pierre/diffs theming hooks */
 [data-diff-root] {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
 }
