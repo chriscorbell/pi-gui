@@ -54,15 +54,18 @@ export class Updater extends EventEmitter<{ state: [UpdateState] }> {
 
   start(): void {
     if (!app.isPackaged) return;
-    // Remove bundles left beside us by earlier updates. They were still running when they were
-    // replaced, and the previous process may still be exiting as this one starts, so retry a few times.
+    // Bundles displaced by earlier updates sit beside us. macOS App Management does not let an app
+    // delete files inside another app bundle, but moving the bundle is allowed, so they go to the
+    // Trash. The previous process may still be exiting as this one starts, hence the retries.
     const appPath = process.execPath.split(".app/")[0] + ".app";
     const parent = dirname(appPath);
     const prefix = `.${basename(appPath)}.old`;
     const sweep = async () => {
       const entries = await readdir(parent).catch(() => [] as string[]);
       for (const e of entries) {
-        if (e.startsWith(prefix)) await rm(join(parent, e), { recursive: true, force: true }).catch(() => {});
+        if (!e.startsWith(prefix)) continue;
+        const path = join(parent, e);
+        await shell.trashItem(path).catch(() => rm(path, { recursive: true, force: true }).catch(() => {}));
       }
     };
     for (const delay of [2000, 15000, 60000]) setTimeout(() => void sweep(), delay).unref();
