@@ -8,8 +8,10 @@ import { scanProjects, SESSIONS_DIR } from "./sessions/scan";
 import { SessionHost } from "./pi/session-host";
 import { changedFiles, currentBranch, patchFor } from "./git";
 import { locatePi } from "./pi/locate";
+import { TerminalHost } from "./terminal";
 
 const host = new SessionHost();
+const terminals = new TerminalHost();
 const openedFolders = new Set<string>();
 let win: BrowserWindow | null = null;
 
@@ -44,6 +46,12 @@ function createWindow(): void {
     },
   });
   win.once("ready-to-show", () => win?.show());
+  if (!app.isPackaged) {
+    // Surface renderer errors in the dev server log.
+    win.webContents.on("console-message", (event) => {
+      if (event.level === "error" || event.level === "warning") console.log(`[renderer:${event.level}] ${event.message}`);
+    });
+  }
   win.on("focus", () => {
     host.setWindowFocused(true);
     send(IPC.windowFocus, true);
@@ -131,6 +139,7 @@ function registerIpc(): void {
   ipcMain.handle(IPC.sessionLive, () => host.liveStates());
   ipcMain.handle(IPC.sessionTrash, async (_e, key: string, path: string) => {
     host.forget(key);
+    terminals.close(key);
     await shell.trashItem(path);
     updateBadge();
   });
@@ -146,6 +155,11 @@ function registerIpc(): void {
   ipcMain.handle(IPC.gitChanges, (_e, cwd: string) => changedFiles(cwd));
   ipcMain.handle(IPC.gitPatch, (_e, cwd: string, file: ChangedFile) => patchFor(cwd, file));
   ipcMain.handle(IPC.gitBranch, (_e, cwd: string) => currentBranch(cwd));
+
+  ipcMain.handle(IPC.terminalOpen, (_e, id: string, cwd: string, cols: number, rows: number) => terminals.open(id, cwd, cols, rows));
+  ipcMain.handle(IPC.terminalWrite, (_e, id: string, data: string) => terminals.write(id, data));
+  ipcMain.handle(IPC.terminalResize, (_e, id: string, cols: number, rows: number) => terminals.resize(id, cols, rows));
+  ipcMain.handle(IPC.terminalClose, (_e, id: string) => terminals.close(id));
 }
 
 function listProjectFiles(cwd: string): Promise<string[]> {
@@ -161,6 +175,9 @@ function listProjectFiles(cwd: string): Promise<string[]> {
     );
   });
 }
+
+terminals.on("data", (p) => send(IPC.terminalData, p));
+terminals.on("exit", (p) => send(IPC.terminalExit, p));
 
 host.on("event", (payload) => {
   send(IPC.piEvent, payload);
@@ -191,4 +208,5 @@ app.on("before-quit", () => {
   sessionsWatcher?.close();
   gitWatcher?.close();
   host.shutdown();
+  terminals.shutdown();
 });

@@ -43,6 +43,7 @@ export interface GuiSettings {
   panelWidth: number;
   sidebarCollapsed: boolean;
   panelCollapsed: boolean;
+  panelTab: "changes" | "terminal";
   collapsedProjects: string[];
   lastSessionKey: string | null;
 }
@@ -57,6 +58,7 @@ export const DEFAULT_SETTINGS: GuiSettings = {
   panelWidth: 440,
   sidebarCollapsed: false,
   panelCollapsed: true,
+  panelTab: "changes",
   collapsedProjects: [],
   lastSessionKey: null,
 };
@@ -229,6 +231,10 @@ export const IPC = {
   gitChanges: "git:changes",
   gitPatch: "git:patch",
   gitBranch: "git:branch",
+  terminalOpen: "terminal:open",
+  terminalWrite: "terminal:write",
+  terminalResize: "terminal:resize",
+  terminalClose: "terminal:close",
   piLocate: "pi:locate",
   // main -> renderer (send)
   piEvent: "pi:event",
@@ -236,4 +242,6 @@ export const IPC = {
   projectsChanged: "projects:changed",
   gitChanged: "git:changed",
   windowFocus: "window:focus",
+  terminalData: "terminal:data",
+  terminalExit: "terminal:exit",
 } as const;

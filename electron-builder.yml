@@ -18,4 +18,4 @@ mac:
   darkModeSupport: true
 dmg:
   artifactName: Pi-${version}-${arch}.${ext}
-npmRebuild: false
+npmRebuild: true

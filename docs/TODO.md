@@ -1,47 +1,25 @@
 # Agreed but not done
 
-Decisions from the 2026-09-08 design session that are still open, grouped by state. Delete lines as they land.
+Decisions from the 2026-09-08 design session that are still open. Delete lines as they land.
 
-## Agreed for v1, built, never exercised
+## Verified 2026-09-09
 
-These exist in the code but no run has triggered them yet. Each needs one real check.
+Everything in the original "built but never exercised" list was run against the dev app and passed: extension dialogs (select, confirm, input, editor) with the needs-input state, image paste and send, `@` file mentions, ArrowUp history, queue remove and promote, light theme, unread clearing on focus, the crash banner and Restart, extension widgets and status text, composer prefill from an extension, rename, Trash, and Compact. Sounds and the Dock badge were confirmed by Chris. Also verified: reopen of an app-started session after a restart.
 
-- [ ] Extension dialogs (select, confirm, input, editor) rendered as a sheet, and the needs-input sidebar state they set
-- [ ] Image paste and the attach button in the composer, sent as prompt images
-- [ ] `@` file mention popup inserting a project-relative path
-- [ ] ArrowUp prompt history recall in an empty composer
-- [ ] Follow-up queue: remove an item, promote an item to steering
-- [ ] Light theme, and the system/light/dark switch in settings
-- [ ] Sounds: chime on an unseen turn end after 15 seconds, ping when an Extension dialog opens unseen, mute toggle
-- [ ] Dock badge counting Unread plus Needs input sessions
-- [ ] Unread clearing when the Session is selected in a focused window
-- [ ] Crash banner with the Restart button when a pi process exits
-- [ ] Extension widgets (`setWidget`) rendered above the composer
-- [ ] Session rename, Trash, and Compact from the header menu
-
-## Agreed for v1, missing or partial
-
-- [ ] Auto-retry status line needs an "Abort retry" action (round 3, failure handling)
-- [ ] Compact action should accept optional instructions (round 3, compaction)
-- [ ] Split/unified toggle belongs in the Changes panel header, not only in settings (round 3, diff presentation)
-- [ ] Reopen the last Session on launch when it was started in the app that run (path is now persisted; verify after a restart)
+Shipped alongside: Stop retrying button, Compact with optional instructions, split/unified toggle in the Changes panel, a plain login shell per session in the Terminal tab, and the current branch shown in the header.
 
 ## Agreed for later
 
-Explicitly pushed past v1 during the grilling, in rough priority order.
-
-- [ ] Embedded terminal in the right panel (replaces the `!` shell prefix we chose not to build)
-- [ ] Git actions: stage, commit, branch, worktree per Session
-- [ ] Per-turn diff checkpoints using hidden git refs
+- [ ] Git actions beyond the branch indicator: nothing planned for now
 - [ ] Session tree: fork from a message, branch navigation, labels
 - [ ] Command palette (Cmd+K) and Cmd+1..9 session switching
-- [ ] Tool approval gate as a bundled Extension with a permission-mode picker
 - [ ] Remote pi host over a socket transport, same contract, UI unchanged
-- [ ] Project trust dialog instead of always passing `--approve`, if the app is ever published
-- [ ] Code signing and notarization for the DMG
 
-## Open questions never decided
+## Decided against
 
-- [ ] Sidebar rows are 28px tall after the type bump; loosen to 32px?
-- [ ] In llm-server, `opencode.jsonc`, `scripts/bench.py`, `eval/vision_check.py`, and `.pi/prompts/bench.md` still read `LLM_SERVER_API_KEY` from the environment, which no longer exists in new shells
-- [ ] pi's `shellCommandPrefix` pulls the `ls` alias to eza, which prints nothing for `ls` with no path in a non-TTY; affects the TUI too
+Tool approval gate, project trust dialog, code signing, sidebar row height change.
+
+## Open questions
+
+- [ ] Per-turn diff checkpoints: still to be explained and decided
+- [ ] Agent shell isolation from the interactive zsh setup (the eza `ls` alias): recommendation pending Chris's call

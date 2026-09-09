@@ -28,7 +28,8 @@ pnpm dev
 - Composer with `/` commands from pi, `@` file mentions, image paste, and ArrowUp history
 - Follow-up queue while a turn runs, with promotion to steering
 - Model and thinking-level pickers, a context meter, and the status text your extensions publish
-- Read-only diff of the project's working tree against HEAD, refreshed as files change
+- Read-only diff of the project's working tree against HEAD, refreshed as files change, plus a login shell in the project directory
+- Current git branch in the header
 - Extension dialogs (select, confirm, input, editor) rendered as sheets, notifications as toasts
 - Unread and needs-input markers in the sidebar and a Dock badge
 

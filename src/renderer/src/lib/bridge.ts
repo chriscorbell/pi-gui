@@ -42,11 +42,20 @@ export const bridge = {
     patch: (cwd: string, file: ChangedFile) => invoke(IPC.gitPatch, cwd, file) as Promise<string>,
     branch: (cwd: string) => invoke(IPC.gitBranch, cwd) as Promise<string | null>,
   },
+  terminal: {
+    open: (id: string, cwd: string, cols: number, rows: number) =>
+      invoke(IPC.terminalOpen, id, cwd, cols, rows) as Promise<{ id: string; created: boolean }>,
+    write: (id: string, data: string) => invoke(IPC.terminalWrite, id, data) as Promise<void>,
+    resize: (id: string, cols: number, rows: number) => invoke(IPC.terminalResize, id, cols, rows) as Promise<void>,
+    close: (id: string) => invoke(IPC.terminalClose, id) as Promise<void>,
+  },
   events: {
     onPiEvent: (cb: (p: { key: string; event: PiEvent }) => void) => on(IPC.piEvent, cb as (p: unknown) => void),
     onLive: (cb: (s: SessionLiveState) => void) => on(IPC.sessionLiveChanged, cb as (p: unknown) => void),
     onProjectsChanged: (cb: () => void) => on(IPC.projectsChanged, cb),
     onGitChanged: (cb: (cwd: string) => void) => on(IPC.gitChanged, cb as (p: unknown) => void),
     onWindowFocus: (cb: (focused: boolean) => void) => on(IPC.windowFocus, cb as (p: unknown) => void),
+    onTerminalData: (cb: (p: { id: string; data: string }) => void) => on(IPC.terminalData, cb as (p: unknown) => void),
+    onTerminalExit: (cb: (p: { id: string; exitCode: number }) => void) => on(IPC.terminalExit, cb as (p: unknown) => void),
   },
 };

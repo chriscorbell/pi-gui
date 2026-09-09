@@ -1,7 +1,4 @@
-import { useEffect, useState } from "react";
-import { GitBranch } from "lucide-react";
 import { useApp } from "@/store/app";
-import { bridge } from "@/lib/bridge";
 import { Tip } from "@/components/ui";
 import { cn, formatCost, formatTokens } from "@/lib/utils";
 
@@ -23,32 +20,11 @@ function ContextMeter({ percent, tokens, window }: { percent: number | null; tok
 /** The thin line under the composer: branch, context meter, cost, and whatever Extensions publish as status. */
 export function ContextStrip({ sessionKey }: { sessionKey: string }) {
   const session = useApp((s) => s.sessions[sessionKey]);
-  const [branch, setBranch] = useState<string | null>(null);
-  const cwd = session?.cwd;
-
-  useEffect(() => {
-    if (!cwd) return;
-    let cancelled = false;
-    const load = () => void bridge.git.branch(cwd).then((b) => !cancelled && setBranch(b));
-    load();
-    const off = bridge.events.onGitChanged((changed) => changed === cwd && load());
-    return () => {
-      cancelled = true;
-      off();
-    };
-  }, [cwd]);
-
   if (!session) return null;
   const statuses = Object.values(session.statuses);
 
   return (
     <div className="flex h-7 items-center gap-3 px-2 text-[12px] text-fg-faint">
-      {branch && (
-        <span className="flex items-center gap-1">
-          <GitBranch className="h-3 w-3" strokeWidth={2} />
-          {branch}
-        </span>
-      )}
       {session.stats?.contextUsage && (
         <ContextMeter percent={session.stats.contextUsage.percent} tokens={session.stats.contextUsage.tokens} window={session.stats.contextUsage.contextWindow} />
       )}

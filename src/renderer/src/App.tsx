@@ -5,7 +5,7 @@ import { useShortcuts } from "@/hooks/useShortcuts";
 import { TooltipProvider } from "@/components/ui";
 import { Sidebar } from "@/components/Sidebar";
 import { Thread } from "@/components/Thread";
-import { DiffPanel } from "@/components/DiffPanel";
+import { RightPanel } from "@/components/RightPanel";
 import { Toasts } from "@/components/Toasts";
 import { SettingsSheet } from "@/components/SettingsSheet";
 import { DialogSheet } from "@/components/DialogSheet";
@@ -100,7 +100,7 @@ export function App() {
                 onDone={() => void updateSettings({ panelWidth: widths.current.panel })}
               />
               <div ref={panelRef} style={{ width: settings.panelWidth }} className="shrink-0 border-l border-border bg-bg-sunken">
-                <DiffPanel />
+                <RightPanel />
               </div>
             </>
           )}

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { PatchDiff } from "@pierre/diffs/react";
-import { FileDiff, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import type { ChangedFile } from "@shared/contract";
 import { useApp } from "@/store/app";
 import { bridge } from "@/lib/bridge";
@@ -18,6 +18,7 @@ const STATUS_GLYPH: Record<ChangedFile["status"], { label: string; tone: string 
 export function DiffPanel() {
   const cwd = useApp((s) => (s.selectedKey ? s.sessions[s.selectedKey]?.cwd : undefined));
   const diffStyle = useApp((s) => s.settings.diffStyle);
+  const updateSettings = useApp((s) => s.updateSettings);
   const isDark = document.documentElement.classList.contains("dark");
   const [files, setFiles] = useState<ChangedFile[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
@@ -56,9 +57,19 @@ export function DiffPanel() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="drag flex h-[52px] shrink-0 items-center gap-2 border-b border-border px-3 text-[13px] font-medium text-fg-muted">
-        <FileDiff className="h-3.5 w-3.5" strokeWidth={1.75} />
-        <span className="flex-1">Changes</span>
+      <div className="flex h-9 shrink-0 items-center gap-1 border-b border-border px-2 text-[12.5px] text-fg-muted">
+        <span className="flex-1 pl-1">{files.length ? `${files.length} changed` : "Working tree"}</span>
+        <div className="flex rounded-md border border-border p-0.5">
+          {(["unified", "split"] as const).map((mode) => (
+            <button
+              key={mode}
+              onClick={() => void updateSettings({ diffStyle: mode })}
+              className={cn("h-6 rounded px-2 text-[12px] capitalize transition-colors", diffStyle === mode ? "bg-active text-fg" : "hover:text-fg")}
+            >
+              {mode}
+            </button>
+          ))}
+        </div>
         {loading && <Spinner />}
         <IconButton label="Refresh" className="h-6 w-6" onClick={() => void refresh()}>
           <RefreshCw className="h-3.5 w-3.5" strokeWidth={1.75} />

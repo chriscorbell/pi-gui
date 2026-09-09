@@ -82,11 +82,12 @@ interface AppState {
 
   sendPrompt: (key: string, text: string, images: { data: string; mimeType: string }[]) => Promise<void>;
   abort: (key: string) => Promise<void>;
+  abortRetry: (key: string) => Promise<void>;
   removeQueued: (key: string, kind: "steering" | "followUp", index: number) => Promise<void>;
   promoteToSteering: (key: string, index: number) => Promise<void>;
   setModel: (key: string, provider: string, modelId: string) => Promise<void>;
   setThinking: (key: string, level: string) => Promise<void>;
-  compact: (key: string) => Promise<void>;
+  compact: (key: string, instructions?: string) => Promise<void>;
   renameSession: (key: string, name: string) => Promise<void>;
   respondDialog: (key: string, id: string, response: ExtensionUiResponse) => Promise<void>;
   setDraft: (key: string, draft: string) => void;
@@ -505,7 +506,16 @@ export const useApp = create<AppState>((set, get) => {
     },
 
     abort: async (key) => {
+      // Clear the queue first so pi does not deliver queued messages after the abort,
+      // then hand the cleared text back to the composer, the way the TUI does on Escape.
+      const cleared = await bridge.pi.command<{ steering: string[]; followUp: string[] }>(key, { type: "clear_queue" });
       await bridge.pi.command(key, { type: "abort" });
+      const restored = cleared.success && cleared.data ? [...cleared.data.steering, ...cleared.data.followUp] : [];
+      if (restored.length) patchSession(key, { editorText: restored.join("\n\n") });
+    },
+
+    abortRetry: async (key) => {
+      await bridge.pi.command(key, { type: "abort_retry" });
     },
 
     removeQueued: async (key, kind, index) => {
@@ -539,8 +549,8 @@ export const useApp = create<AppState>((set, get) => {
       await Promise.all([refreshState(key), refreshEntries(key)]);
     },
 
-    compact: async (key) => {
-      const res = await bridge.pi.command(key, { type: "compact" });
+    compact: async (key, instructions) => {
+      const res = await bridge.pi.command(key, { type: "compact", ...(instructions ? { customInstructions: instructions } : {}) });
       if (!res.success) get().pushToast(res.error ?? "Compaction failed", "error");
     },
 

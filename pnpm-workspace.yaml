@@ -1,6 +1,7 @@
 allowBuilds:
   electron: true
   esbuild: true
+  node-pty: true
   electron-winstaller: false
 minimumReleaseAgeExclude:
   - electron@44.3.0

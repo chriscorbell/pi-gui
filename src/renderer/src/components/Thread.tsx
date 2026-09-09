@@ -15,6 +15,7 @@ export function Thread() {
   const live = useApp((s) => (s.selectedKey ? s.live[s.selectedKey] : undefined));
   const project = useApp((s) => s.projects.find((p) => p.cwd === session?.cwd));
   const restart = useApp((s) => s.restartSession);
+  const abortRetry = useApp((s) => s.abortRetry);
   const projects = useApp((s) => s.projects);
   const openFolder = useApp((s) => s.openFolder);
   const openSession = useApp((s) => s.openSession);
@@ -140,7 +141,13 @@ export function Thread() {
               )}
               {session.retry && (
                 <div className="flex items-center gap-2 py-3 text-[13px] text-warn">
-                  <Spinner className="text-warn" /> Retrying ({session.retry.attempt}/{session.retry.maxAttempts}): {session.retry.error}
+                  <Spinner className="text-warn" />
+                  <span className="min-w-0 flex-1 truncate">
+                    Retrying ({session.retry.attempt}/{session.retry.maxAttempts}): {session.retry.error}
+                  </span>
+                  <Button size="sm" variant="ghost" onClick={() => void abortRetry(key)}>
+                    Stop retrying
+                  </Button>
                 </div>
               )}
             </div>
