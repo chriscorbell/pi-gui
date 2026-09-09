@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ChevronRight, Image as ImageIcon, Layers, Terminal } from "lucide-react";
@@ -142,6 +142,7 @@ function CompactionItem({ summary, tokensBefore }: { summary: string; tokensBefo
 }
 
 export function Transcript({
+  sessionKey,
   items,
   partial,
   toolRuns,
@@ -153,6 +154,20 @@ export function Transcript({
   toolRuns: Record<string, ToolRun>;
   working: boolean;
 }) {
+  // Items present when a Session is first shown render still; items that arrive afterwards ease in.
+  const seen = useRef<{ key: string; ids: Set<string> } | null>(null);
+  const hadPartial = useRef(false);
+  if (!seen.current || seen.current.key !== sessionKey) {
+    seen.current = { key: sessionKey, ids: new Set(items.map((i) => i.id)) };
+  }
+  // A reply that was just streaming is already on screen; when its final entry replaces the
+  // partial it must not replay the entrance, so everything present at that moment counts as seen.
+  if (hadPartial.current && !partial) for (const i of items) seen.current.ids.add(i.id);
+  const fresh = (id: string) => (seen.current!.ids.has(id) ? "" : "anim-item");
+  useEffect(() => {
+    for (const i of items) seen.current!.ids.add(i.id);
+    hadPartial.current = partial !== null;
+  });
   if (items.length === 0 && !partial) {
     return <div className="py-16 text-center text-[13.5px] text-fg-faint">Send a message to start.</div>;
   }
@@ -161,16 +176,32 @@ export function Transcript({
       {items.map((item) => {
         switch (item.kind) {
           case "user":
-            return <UserItem key={item.id} text={item.text} images={item.images} />;
+            return (
+              <div key={item.id} className={fresh(item.id)}>
+                <UserItem text={item.text} images={item.images} />
+              </div>
+            );
           case "assistant":
-            return <AssistantItem key={item.id} message={item.message} results={item.results} toolRuns={toolRuns} />;
+            return (
+              <div key={item.id} className={fresh(item.id)}>
+                <AssistantItem message={item.message} results={item.results} toolRuns={toolRuns} />
+              </div>
+            );
           case "bash":
-            return <BashItem key={item.id} command={item.command} output={item.output} exitCode={item.exitCode} />;
+            return (
+              <div key={item.id} className={fresh(item.id)}>
+                <BashItem command={item.command} output={item.output} exitCode={item.exitCode} />
+              </div>
+            );
           case "compaction":
-            return <CompactionItem key={item.id} summary={item.summary} tokensBefore={item.tokensBefore} />;
+            return (
+              <div key={item.id} className={fresh(item.id)}>
+                <CompactionItem summary={item.summary} tokensBefore={item.tokensBefore} />
+              </div>
+            );
           case "custom":
             return (
-              <div key={item.id} className="my-1 rounded-md border border-border bg-bg-sunken px-3 py-2 text-[13.5px]">
+              <div key={item.id} className={cn("my-1 rounded-md border border-border bg-bg-sunken px-3 py-2 text-[13.5px]", fresh(item.id))}>
                 <div className="mb-0.5 text-[11.5px] uppercase tracking-wide text-fg-faint">{item.customType}</div>
                 <Markdown text={item.text} />
               </div>
@@ -184,12 +215,12 @@ export function Transcript({
         }
       })}
       {partial && (
-        <div className="py-2">
+        <div className="anim-item py-2">
           <AssistantBlocks content={partial.content} results={{}} toolRuns={toolRuns} streaming toolArgs={partial.toolArgs} />
         </div>
       )}
       {working && !partial && (
-        <div className="flex items-center gap-2 py-3 text-[13px] text-fg-muted">
+        <div className="anim-item flex items-center gap-2 py-3 text-[13px] text-fg-muted">
           <Spinner /> Waiting for the model
         </div>
       )}

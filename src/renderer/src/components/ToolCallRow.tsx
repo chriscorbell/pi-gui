@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronRight, FileEdit, FilePlus, FileText, FolderSearch, Search, Terminal, Wrench, Check, X } from "lucide-react";
 import type { ContentBlock } from "@shared/contract";
 import type { ToolRun } from "@/store/app";
@@ -84,6 +84,16 @@ export function ToolCallRow({ call, result, run, pendingArgs }: { call: ToolCall
   const diff = typeof details.diff === "string" ? details.diff : null;
   const [open, setOpen] = useState<boolean | null>(null);
   const expanded = open ?? (call.name === "edit" && !!diff);
+  // Rows that start open (edit diffs) must not animate on first paint, or the transcript shuffles mid-stream.
+  const instant = useRef(true);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => (instant.current = false));
+    return () => cancelAnimationFrame(id);
+  }, []);
+  const [everOpened, setEverOpened] = useState(expanded);
+  useEffect(() => {
+    if (expanded) setEverOpened(true);
+  }, [expanded]);
   const Icon = iconFor(call.name);
   const resultText = result ? textOf(result.content) : run?.partial ?? "";
   const hasBody = Boolean(resultText) || Boolean(diff) || (call.name === "write" && typeof call.arguments.content === "string");
@@ -105,17 +115,23 @@ export function ToolCallRow({ call, result, run, pendingArgs }: { call: ToolCall
       {!expanded && running && resultText && call.name === "bash" && (
         <pre className="max-h-20 overflow-hidden border-t border-border px-3 py-1.5 font-mono text-[12px] leading-[1.45] text-fg-muted whitespace-pre-wrap">{tail(resultText, 4)}</pre>
       )}
-      {expanded && (
-        <div className="border-t border-border">
-          {diff ? (
-            <DiffView diff={diff} />
-          ) : call.name === "write" && typeof call.arguments.content === "string" ? (
-            <pre className="selectable max-h-[420px] overflow-auto px-3 py-2 font-mono text-[12.5px] leading-[1.5] text-fg-muted whitespace-pre-wrap">{call.arguments.content}</pre>
-          ) : (
-            <pre className={cn("selectable max-h-[420px] overflow-auto px-3 py-2 font-mono text-[12.5px] leading-[1.5] whitespace-pre-wrap", isError ? "text-danger" : "text-fg-muted")}>
-              {resultText}
-            </pre>
-          )}
+      {hasBody && (
+        <div className="disclosure" data-open={expanded} data-instant={instant.current}>
+          <div>
+            {everOpened && (
+              <div className="border-t border-border">
+                {diff ? (
+                  <DiffView diff={diff} />
+                ) : call.name === "write" && typeof call.arguments.content === "string" ? (
+                  <pre className="selectable max-h-[420px] overflow-auto px-3 py-2 font-mono text-[12.5px] leading-[1.5] text-fg-muted whitespace-pre-wrap">{call.arguments.content}</pre>
+                ) : (
+                  <pre className={cn("selectable max-h-[420px] overflow-auto px-3 py-2 font-mono text-[12.5px] leading-[1.5] whitespace-pre-wrap", isError ? "text-danger" : "text-fg-muted")}>
+                    {resultText}
+                  </pre>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

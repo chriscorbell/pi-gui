@@ -34,6 +34,9 @@ export function SettingsSheet() {
         <Field label="Expand thinking by default" hint="Collapsed blocks show a single line until clicked.">
           <Switch checked={settings.thinkingExpanded} onCheckedChange={(v) => void update({ thinkingExpanded: v })} />
         </Field>
+        <Field label="Reduce motion" hint="Turns off transitions. The OS setting is honored regardless.">
+          <Switch checked={settings.reduceMotion} onCheckedChange={(v) => void update({ reduceMotion: v })} />
+        </Field>
         <Field label="Sounds" hint="A chime when a turn ends unseen, a ping when pi needs input.">
           <Switch checked={!settings.muted} onCheckedChange={(v) => void update({ muted: !v })} />
         </Field>

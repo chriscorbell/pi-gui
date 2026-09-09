@@ -290,6 +290,91 @@ a[href] {
   }
 }
 
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+/* New transcript items: fade plus a 4px rise, same curve as the menus. */
+.anim-item {
+  animation: fade-up 160ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.anim-crossfade {
+  animation: fade-in 120ms ease-out both;
+}
+.anim-fade-out {
+  animation: fade-out 180ms ease-out both;
+}
+.anim-pop {
+  animation: pop 150ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+/* Collapsing side columns animate width; the inner content keeps its own width so text does not reflow. */
+.panel-col {
+  transition: width 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.panel-col[data-dragging="true"] {
+  transition: none;
+}
+.panel-col > .panel-inner {
+  transition: opacity 140ms ease-out 40ms;
+}
+.panel-col[data-collapsed="true"] > .panel-inner {
+  opacity: 0;
+  transition-delay: 0ms;
+  pointer-events: none;
+}
+/* Disclosure bodies animate through grid rows so height is never measured in JS. */
+.disclosure {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.disclosure[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.disclosure > * {
+  min-height: 0;
+  overflow: hidden;
+}
+.disclosure[data-instant="true"] {
+  transition: none;
+}
+/* Reduced motion: the OS setting or the app switch. The working spinner stays. */
+@media (prefers-reduced-motion: reduce) {
+  .anim-item,
+  .anim-crossfade,
+  .anim-fade-out,
+  .anim-pop,
+  .panel-col,
+  .panel-col > .panel-inner,
+  .disclosure {
+    animation-duration: 0ms !important;
+    transition-duration: 0ms !important;
+  }
+}
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0ms !important;
+  transition-duration: 0ms !important;
+}
+.reduce-motion .anim-spin {
+  animation-duration: 900ms !important;
+}
+
 /* Streaming caret */
 .caret::after {
   content: "";

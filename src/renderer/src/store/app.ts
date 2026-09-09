@@ -58,6 +58,7 @@ export interface Toast {
   id: number;
   message: string;
   kind: "info" | "warning" | "error";
+  leaving?: boolean;
 }
 
 interface AppState {
@@ -573,7 +574,11 @@ export const useApp = create<AppState>((set, get) => {
       set((st) => ({ toasts: [...st.toasts, { id, message, kind }] }));
       setTimeout(() => get().dismissToast(id), kind === "error" ? 9000 : 5000);
     },
-    dismissToast: (id) => set((st) => ({ toasts: st.toasts.filter((t) => t.id !== id) })),
+    dismissToast: (id) => {
+      // Fade out first, then drop it once the exit animation has played.
+      set((st) => ({ toasts: st.toasts.map((t) => (t.id === id ? { ...t, leaving: true } : t)) }));
+      setTimeout(() => set((st) => ({ toasts: st.toasts.filter((t) => t.id !== id) })), 190);
+    },
     setSettingsOpen: (open) => set({ settingsOpen: open }),
   };
 });

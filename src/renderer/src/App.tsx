@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useApp } from "@/store/app";
 import { useTheme } from "@/hooks/useTheme";
 import { useShortcuts } from "@/hooks/useShortcuts";
@@ -12,13 +12,14 @@ import { DialogSheet } from "@/components/DialogSheet";
 import { SessionActionSheets } from "@/components/SessionActions";
 import { cn } from "@/lib/utils";
 
-function ResizeHandle({ side, onResize, onDone }: { side: "left" | "right"; onResize: (dx: number) => void; onDone: () => void }) {
+function ResizeHandle({ side, onStart, onResize, onDone }: { side: "left" | "right"; onStart: () => void; onResize: (dx: number) => void; onDone: () => void }) {
   const dragging = useRef(false);
   return (
     <div
       onMouseDown={(e) => {
         e.preventDefault();
         dragging.current = true;
+        onStart();
         let last = e.clientX;
         const move = (ev: MouseEvent) => {
           const dx = ev.clientX - last;
@@ -62,6 +63,7 @@ export function App() {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const widths = useRef({ sidebar: settings.sidebarWidth, panel: settings.panelWidth });
+  const [dragging, setDragging] = useState(false);
   useEffect(() => {
     widths.current = { sidebar: settings.sidebarWidth, panel: settings.panelWidth };
   }, [settings.sidebarWidth, settings.panelWidth]);
@@ -72,39 +74,65 @@ export function App() {
     <TooltipProvider>
       <div className="flex h-full flex-col bg-bg text-fg">
         <div className="flex min-h-0 flex-1">
+          <div
+            ref={sidebarRef}
+            data-collapsed={settings.sidebarCollapsed}
+            data-dragging={dragging}
+            style={{ width: settings.sidebarCollapsed ? 0 : settings.sidebarWidth }}
+            className="panel-col shrink-0 overflow-hidden border-r border-border bg-bg-sunken"
+          >
+            <div className="panel-inner h-full" style={{ width: settings.sidebarWidth }} inert={settings.sidebarCollapsed}>
+              <Sidebar />
+            </div>
+          </div>
           {!settings.sidebarCollapsed && (
-            <>
-              <div ref={sidebarRef} style={{ width: settings.sidebarWidth }} className="shrink-0 border-r border-border bg-bg-sunken">
-                <Sidebar />
-              </div>
-              <ResizeHandle
-                side="left"
-                onResize={(dx) => {
-                  widths.current.sidebar = Math.min(480, Math.max(200, widths.current.sidebar + dx));
-                  if (sidebarRef.current) sidebarRef.current.style.width = `${widths.current.sidebar}px`;
-                }}
-                onDone={() => void updateSettings({ sidebarWidth: widths.current.sidebar })}
-              />
-            </>
+            <ResizeHandle
+              side="left"
+              onStart={() => setDragging(true)}
+              onResize={(dx) => {
+                widths.current.sidebar = Math.min(480, Math.max(200, widths.current.sidebar + dx));
+                if (sidebarRef.current) {
+                  sidebarRef.current.style.width = `${widths.current.sidebar}px`;
+                  (sidebarRef.current.firstElementChild as HTMLElement).style.width = `${widths.current.sidebar}px`;
+                }
+              }}
+              onDone={() => {
+                setDragging(false);
+                void updateSettings({ sidebarWidth: widths.current.sidebar });
+              }}
+            />
           )}
           <main className="flex min-w-0 flex-1 flex-col">
             <Thread />
           </main>
           {!settings.panelCollapsed && (
-            <>
-              <ResizeHandle
-                side="right"
-                onResize={(dx) => {
-                  widths.current.panel = Math.min(900, Math.max(280, widths.current.panel + dx));
-                  if (panelRef.current) panelRef.current.style.width = `${widths.current.panel}px`;
-                }}
-                onDone={() => void updateSettings({ panelWidth: widths.current.panel })}
-              />
-              <div ref={panelRef} style={{ width: settings.panelWidth }} className="shrink-0 border-l border-border bg-bg-sunken">
-                <RightPanel />
-              </div>
-            </>
+            <ResizeHandle
+              side="right"
+              onStart={() => setDragging(true)}
+              onResize={(dx) => {
+                widths.current.panel = Math.min(900, Math.max(280, widths.current.panel + dx));
+                if (panelRef.current) {
+                  panelRef.current.style.width = `${widths.current.panel}px`;
+                  (panelRef.current.firstElementChild as HTMLElement).style.width = `${widths.current.panel}px`;
+                }
+              }}
+              onDone={() => {
+                setDragging(false);
+                void updateSettings({ panelWidth: widths.current.panel });
+              }}
+            />
           )}
+          <div
+            ref={panelRef}
+            data-collapsed={settings.panelCollapsed}
+            data-dragging={dragging}
+            style={{ width: settings.panelCollapsed ? 0 : settings.panelWidth }}
+            className="panel-col shrink-0 overflow-hidden border-l border-border bg-bg-sunken"
+          >
+            <div className="panel-inner h-full" style={{ width: settings.panelWidth }} inert={settings.panelCollapsed}>
+              <RightPanel />
+            </div>
+          </div>
         </div>
         <Toasts />
         <SettingsSheet />

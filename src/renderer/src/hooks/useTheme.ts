@@ -7,6 +7,10 @@ import { useApp } from "@/store/app";
  */
 export function useTheme(): void {
   const theme = useApp((s) => s.settings.theme);
+  const reduceMotion = useApp((s) => s.settings.reduceMotion);
+  useEffect(() => {
+    document.documentElement.classList.toggle("reduce-motion", reduceMotion);
+  }, [reduceMotion]);
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const apply = () => {

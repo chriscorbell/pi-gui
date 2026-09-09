@@ -8,9 +8,10 @@ import { SessionContextMenu } from "@/components/SessionActions";
 import { cn, relativeTime } from "@/lib/utils";
 
 function StatusDot({ status }: { status: SessionStatus | "off" }) {
-  if (status === "working") return <Spinner className="h-3 w-3 text-fg-muted" />;
-  if (status === "needs-input") return <span className="anim-pulse h-2 w-2 rounded-full bg-warn" />;
-  if (status === "unread") return <span className="h-2 w-2 rounded-full bg-accent" />;
+  // Keyed on status so each change re-runs the pop.
+  if (status === "working") return <Spinner key="working" className="anim-pop h-3 w-3 text-fg-muted" />;
+  if (status === "needs-input") return <span key="needs-input" className="anim-pop h-2 w-2 rounded-full bg-warn [animation:pop_150ms_cubic-bezier(0.16,1,0.3,1)_both,pulse-dot_1.4s_ease-in-out_150ms_infinite]" />;
+  if (status === "unread") return <span key="unread" className="anim-pop h-2 w-2 rounded-full bg-accent" />;
   return null;
 }
 
@@ -158,7 +159,7 @@ export function Sidebar() {
                 <button onClick={() => toggle(cwd)} className="flex min-w-0 flex-1 items-center gap-1.5 text-left" title={cwd}>
                   <span className="truncate font-medium text-fg-faint">{name}</span>
                   {isCollapsed && attention > 0 && (
-                    <span className="rounded-full bg-accent px-1.5 text-[11px] font-semibold leading-4 text-accent-fg">{attention}</span>
+                    <span key={attention} className="anim-pop rounded-full bg-accent px-1.5 text-[11px] font-semibold leading-4 text-accent-fg">{attention}</span>
                   )}
                   <ChevronDown className={cn("h-3 w-3 shrink-0 text-fg-faint transition-transform duration-150", isCollapsed && "-rotate-90")} strokeWidth={2} />
                 </button>

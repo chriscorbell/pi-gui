@@ -36,6 +36,7 @@ export type ThemePreference = "system" | "light" | "dark";
 export interface GuiSettings {
   theme: ThemePreference;
   thinkingExpanded: boolean;
+  reduceMotion: boolean;
   muted: boolean;
   piPath: string | null;
   diffStyle: "unified" | "split";
@@ -51,6 +52,7 @@ export interface GuiSettings {
 export const DEFAULT_SETTINGS: GuiSettings = {
   theme: "system",
   thinkingExpanded: false,
+  reduceMotion: false,
   muted: false,
   piPath: null,
   diffStyle: "unified",

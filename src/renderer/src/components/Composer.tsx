@@ -235,7 +235,7 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
   return (
     <div
       className={cn(
-        "relative rounded-xl border bg-surface shadow-[0_1px_2px_oklch(0_0_0/0.2)] transition-[border-color,box-shadow] duration-150 focus-within:border-border-strong",
+        "relative rounded-xl border bg-surface shadow-[0_1px_2px_oklch(0_0_0/0.2)] transition-[border-color,box-shadow] duration-150 focus-within:border-border-strong focus-within:shadow-[0_0_0_3px_var(--accent-soft),0_1px_2px_oklch(0_0_0/0.2)]",
         "border-border",
       )}
       onDragOver={(e) => e.preventDefault()}

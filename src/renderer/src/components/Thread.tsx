@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, RotateCw } from "lucide-react";
 import { useApp } from "@/store/app";
 import { buildTranscript } from "@/lib/transcript";
@@ -8,6 +8,7 @@ import { Composer } from "@/components/Composer";
 import { QueueList } from "@/components/QueueList";
 import { ContextStrip } from "@/components/ContextStrip";
 import { Button, Spinner } from "@/components/ui";
+import { cn } from "@/lib/utils";
 
 export function Thread() {
   const key = useApp((s) => s.selectedKey);
@@ -38,6 +39,10 @@ export function Thread() {
       scrollEl.current = el;
       if (el) {
         el.addEventListener("scroll", onScroll, { passive: true });
+        // Height transitions (tool rows opening) finish after render; keep the anchor through them.
+        el.addEventListener("transitionend", () => {
+          if (stickToBottom.current) el.scrollTop = el.scrollHeight;
+        });
         stickToBottom.current = true;
         el.scrollTop = el.scrollHeight;
       }
@@ -61,6 +66,10 @@ export function Thread() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [userCount]);
 
+  // Hooks run on every render, so the hero handoff is computed before the no-session return.
+  const empty = !!session && items.every((i) => i.kind === "note") && !session.partial && !session.loading && live?.status !== "working";
+  const { showHero, heroLeaving, heroAnimate } = useHeroHandoff(key ?? "", empty);
+
   if (!key || !session) {
     return (
       <div className="flex h-full flex-col">
@@ -82,7 +91,6 @@ export function Thread() {
   }
 
   const widgetsAbove = Object.values(session.widgets);
-  const empty = items.every((i) => i.kind === "note") && !session.partial && !session.loading && live?.status !== "working";
 
   const composerBlock = (
     <>
@@ -100,7 +108,7 @@ export function Thread() {
   );
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
+    <div key={key} className="anim-crossfade flex h-full min-h-0 flex-col">
       <MainHeader />
       {live?.crashed && (
         <div className="mx-6 flex items-start gap-3 rounded-lg border border-danger/30 bg-danger-soft px-4 py-2.5 text-[13.5px]">
@@ -114,10 +122,10 @@ export function Thread() {
           </Button>
         </div>
       )}
-      {empty ? (
+      {showHero ? (
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center pb-20">
-          <div className="anim-fade-up w-full max-w-[760px] px-6">
-            <h1 className="mb-6 text-center text-[26px] font-medium tracking-tight">
+          <div className={cn("w-full max-w-[760px] px-6", heroAnimate && "anim-fade-up")}>
+            <h1 className={cn("mb-6 text-center text-[26px] font-medium tracking-tight", heroLeaving && "anim-fade-out")}>
               What should we build in {project?.name ?? "this project"}?
             </h1>
             {composerBlock}
@@ -125,7 +133,7 @@ export function Thread() {
         </div>
       ) : (
         <>
-          <div ref={setScrollEl} className="min-h-0 flex-1 overflow-y-auto">
+          <div ref={setScrollEl} className="anim-crossfade min-h-0 flex-1 overflow-y-auto">
             <div className="mx-auto w-full max-w-[860px] px-6 pt-2 pb-4">
               {session.loading && items.length === 0 ? (
                 <div className="flex items-center gap-2 py-10 text-[13.5px] text-fg-muted">
@@ -157,4 +165,33 @@ export function Thread() {
       )}
     </div>
   );
+}
+
+const heroShown = new Set<string>();
+
+/**
+ * The hero (headline plus centered composer) hands off to the thread layout when the first reply
+ * starts. Instead of swapping instantly, the headline fades out for 180ms and then the transcript
+ * fades in. The hero's own entrance plays once per Session, not on every return to the empty state.
+ */
+function useHeroHandoff(sessionKey: string, empty: boolean) {
+  const [state, setState] = useState<{ key: string; showHero: boolean; leaving: boolean }>({ key: sessionKey, showHero: empty, leaving: false });
+  const heroAnimate = !heroShown.has(sessionKey);
+  useEffect(() => {
+    if (empty) heroShown.add(sessionKey);
+  }, [sessionKey, empty]);
+  useEffect(() => {
+    if (state.key !== sessionKey) {
+      setState({ key: sessionKey, showHero: empty, leaving: false });
+      return;
+    }
+    if (empty && !state.showHero) setState({ key: sessionKey, showHero: true, leaving: false });
+    if (!empty && state.showHero && !state.leaving) {
+      setState({ key: sessionKey, showHero: true, leaving: true });
+      const t = setTimeout(() => setState({ key: sessionKey, showHero: false, leaving: false }), 180);
+      return () => clearTimeout(t);
+    }
+  }, [sessionKey, empty, state.key, state.showHero, state.leaving]);
+  const current = state.key === sessionKey ? state : { showHero: empty, leaving: false };
+  return { showHero: current.showHero, heroLeaving: current.leaving, heroAnimate };
 }
