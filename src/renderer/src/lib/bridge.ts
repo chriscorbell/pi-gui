@@ -7,6 +7,7 @@ import {
   type PiEvent,
   type ProjectSummary,
   type SessionLiveState,
+  type UpdateState,
 } from "@shared/contract";
 
 const { invoke, on } = window.pi;
@@ -49,6 +50,13 @@ export const bridge = {
     resize: (id: string, cols: number, rows: number) => invoke(IPC.terminalResize, id, cols, rows) as Promise<void>,
     close: (id: string) => invoke(IPC.terminalClose, id) as Promise<void>,
   },
+  update: {
+    state: () => invoke(IPC.updateState) as Promise<UpdateState>,
+    check: () => invoke(IPC.updateCheck) as Promise<void>,
+    install: () => invoke(IPC.updateInstall) as Promise<void>,
+    restart: () => invoke(IPC.updateRestart) as Promise<void>,
+    openRelease: () => invoke(IPC.updateOpenRelease) as Promise<void>,
+  },
   events: {
     onPiEvent: (cb: (p: { key: string; event: PiEvent }) => void) => on(IPC.piEvent, cb as (p: unknown) => void),
     onLive: (cb: (s: SessionLiveState) => void) => on(IPC.sessionLiveChanged, cb as (p: unknown) => void),
@@ -56,6 +64,7 @@ export const bridge = {
     onGitChanged: (cb: (cwd: string) => void) => on(IPC.gitChanged, cb as (p: unknown) => void),
     onWindowFocus: (cb: (focused: boolean) => void) => on(IPC.windowFocus, cb as (p: unknown) => void),
     onMenuCommand: (cb: (command: string) => void) => on(IPC.menuCommand, cb as (p: unknown) => void),
+    onUpdateChanged: (cb: (s: UpdateState) => void) => on(IPC.updateChanged, cb as (p: unknown) => void),
     onTerminalData: (cb: (p: { id: string; data: string }) => void) => on(IPC.terminalData, cb as (p: unknown) => void),
     onTerminalExit: (cb: (p: { id: string; exitCode: number }) => void) => on(IPC.terminalExit, cb as (p: unknown) => void),
   },

@@ -204,6 +204,18 @@ export interface PiCommandResult<T = unknown> {
   error?: string;
 }
 
+// ---- updates ----
+
+export interface UpdateState {
+  status: "idle" | "checking" | "available" | "downloading" | "ready";
+  currentVersion: string;
+  latestVersion?: string;
+  releaseUrl?: string;
+  progress?: number;
+  error?: string;
+  checkedAt?: number;
+}
+
 // ---- git ----
 
 export interface ChangedFile {
@@ -237,6 +249,11 @@ export const IPC = {
   terminalWrite: "terminal:write",
   terminalResize: "terminal:resize",
   terminalClose: "terminal:close",
+  updateState: "update:state",
+  updateCheck: "update:check",
+  updateInstall: "update:install",
+  updateRestart: "update:restart",
+  updateOpenRelease: "update:openRelease",
   piLocate: "pi:locate",
   // main -> renderer (send)
   piEvent: "pi:event",
@@ -245,6 +262,7 @@ export const IPC = {
   gitChanged: "git:changed",
   windowFocus: "window:focus",
   menuCommand: "menu:command",
+  updateChanged: "update:changed",
   terminalData: "terminal:data",
   terminalExit: "terminal:exit",
 } as const;

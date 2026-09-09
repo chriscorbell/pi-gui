@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ChevronDown, FolderPlus, PanelLeft, RefreshCw, Search, Settings2, SquarePen, X } from "lucide-react";
+import { ArrowDownToLine, ChevronDown, FolderPlus, PanelLeft, RefreshCw, RotateCw, Search, Settings2, SquarePen, X } from "lucide-react";
 import type { SessionStatus } from "@shared/contract";
 import { keyForPath, useApp } from "@/store/app";
 import { IconButton, Spinner } from "@/components/ui";
@@ -27,6 +27,9 @@ export function Sidebar() {
   const openFolder = useApp((s) => s.openFolder);
   const refreshProjects = useApp((s) => s.refreshProjects);
   const setSettingsOpen = useApp((s) => s.setSettingsOpen);
+  const upd = useApp((s) => s.update);
+  const installUpdate = useApp((s) => s.installUpdate);
+  const restartForUpdate = useApp((s) => s.restartForUpdate);
   const [query, setQuery] = useState("");
   const [searching, setSearching] = useState(false);
 
@@ -207,6 +210,33 @@ export function Sidebar() {
         })}
       </div>
 
+      {(upd.status === "available" || upd.status === "downloading" || upd.status === "ready") && (
+        <div className="anim-item mx-2 mb-2 rounded-md border border-border bg-surface px-2.5 py-2 text-[12.5px]">
+          {upd.status === "ready" ? (
+            <button onClick={() => void restartForUpdate()} className="flex w-full items-center gap-2 text-left text-fg hover:text-accent">
+              <RotateCw className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+              <span className="flex-1">Restart to finish updating to {upd.latestVersion}</span>
+            </button>
+          ) : upd.status === "downloading" ? (
+            <div>
+              <div className="flex items-center gap-2 text-fg-muted">
+                <ArrowDownToLine className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+                <span className="flex-1">Downloading {upd.latestVersion}</span>
+                <span className="tabular-nums">{Math.round((upd.progress ?? 0) * 100)}%</span>
+              </div>
+              <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-border-strong/60">
+                <div className="h-full rounded-full bg-accent transition-[width] duration-200" style={{ width: `${(upd.progress ?? 0) * 100}%` }} />
+              </div>
+            </div>
+          ) : (
+            <button onClick={() => void installUpdate()} className="flex w-full items-center gap-2 text-left text-fg hover:text-accent">
+              <ArrowDownToLine className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+              <span className="flex-1">Pi {upd.latestVersion} is available</span>
+              <span className="text-accent">Install</span>
+            </button>
+          )}
+        </div>
+      )}
       <div className="flex h-10 shrink-0 items-center justify-between border-t border-border px-2">
         <IconButton label="Settings (Cmd+,)" onClick={() => setSettingsOpen(true)}>
           <Settings2 className="h-4 w-4" strokeWidth={1.75} />

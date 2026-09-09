@@ -12,6 +12,7 @@ import type {
   SessionEntry,
   SessionLiveState,
   SessionStats,
+  UpdateState,
 } from "@shared/contract";
 import { DEFAULT_SETTINGS } from "@shared/contract";
 import { bridge } from "@/lib/bridge";
@@ -71,6 +72,7 @@ interface AppState {
   windowFocused: boolean;
   toasts: Toast[];
   settingsOpen: boolean;
+  update: UpdateState;
 
   init: () => Promise<void>;
   updateSettings: (patch: Partial<GuiSettings>) => Promise<void>;
@@ -97,6 +99,9 @@ interface AppState {
   pushToast: (message: string, kind?: Toast["kind"]) => void;
   dismissToast: (id: number) => void;
   setSettingsOpen: (open: boolean) => void;
+  checkForUpdates: () => Promise<void>;
+  installUpdate: () => Promise<void>;
+  restartForUpdate: () => Promise<void>;
 }
 
 /** Host key for a Session file path: the live entry that owns that path, else the path itself. */
@@ -392,6 +397,7 @@ export const useApp = create<AppState>((set, get) => {
     windowFocused: true,
     toasts: [],
     settingsOpen: false,
+    update: { status: "idle", currentVersion: "" },
 
     init: async () => {
       if (initStarted) return;
@@ -409,6 +415,16 @@ export const useApp = create<AppState>((set, get) => {
       });
       bridge.events.onProjectsChanged(() => void get().refreshProjects());
       bridge.events.onWindowFocus((focused) => set({ windowFocused: focused }));
+      void bridge.update.state().then((update) => set({ update }));
+      let announced: string | null = null;
+      bridge.events.onUpdateChanged((update) => {
+        set({ update });
+        if (update.status === "available" && update.latestVersion && announced !== update.latestVersion) {
+          announced = update.latestVersion;
+          get().pushToast(`Pi ${update.latestVersion} is available. Install it from the sidebar or the Pi menu.`, "info");
+        }
+        if (update.error) get().pushToast(update.error, "warning");
+      });
 
       // Reopen the last Session if its file still exists.
       const last = settings.lastSessionKey;
@@ -580,5 +596,8 @@ export const useApp = create<AppState>((set, get) => {
       setTimeout(() => set((st) => ({ toasts: st.toasts.filter((t) => t.id !== id) })), 190);
     },
     setSettingsOpen: (open) => set({ settingsOpen: open }),
+    checkForUpdates: () => bridge.update.check(),
+    installUpdate: () => bridge.update.install(),
+    restartForUpdate: () => bridge.update.restart(),
   };
 });

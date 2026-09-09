@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useApp } from "@/store/app";
 import { bridge } from "@/lib/bridge";
-import { Field, Select, Sheet, Switch } from "@/components/ui";
+import { Button, Field, Select, Sheet, Switch } from "@/components/ui";
 
 export function SettingsSheet() {
   const open = useApp((s) => s.settingsOpen);
   const setOpen = useApp((s) => s.setSettingsOpen);
   const settings = useApp((s) => s.settings);
   const update = useApp((s) => s.updateSettings);
+  const upd = useApp((s) => s.update);
+  const checkForUpdates = useApp((s) => s.checkForUpdates);
   const [located, setLocated] = useState<string | null>(null);
   const [piPath, setPiPath] = useState(settings.piPath ?? "");
 
@@ -49,6 +51,22 @@ export function SettingsSheet() {
               { value: "split", label: "Split" },
             ]}
           />
+        </Field>
+        <Field
+          label={`Pi ${upd.currentVersion || ""}`}
+          hint={
+            upd.status === "checking"
+              ? "Checking GitHub for a newer release"
+              : upd.status === "available"
+                ? `${upd.latestVersion} is available`
+                : upd.checkedAt
+                  ? `Up to date, checked ${new Date(upd.checkedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`
+                  : "Checks GitHub Releases on launch and every six hours"
+          }
+        >
+          <Button size="sm" disabled={upd.status === "checking" || upd.status === "downloading"} onClick={() => void checkForUpdates()}>
+            Check for updates
+          </Button>
         </Field>
         <div className="py-2.5">
           <div className="text-[14px]">pi binary</div>

@@ -14,7 +14,7 @@ export type MenuCommand =
   | "showTerminal";
 
 /** The macOS application menu. Commands that touch UI state are forwarded to the renderer. */
-export function installMenu(getWindow: () => BrowserWindow | null): void {
+export function installMenu(getWindow: () => BrowserWindow | null, checkForUpdates: () => void): void {
   const send = (command: MenuCommand) => () => getWindow()?.webContents.send(IPC.menuCommand, command);
   const isMac = process.platform === "darwin";
 
@@ -25,6 +25,7 @@ export function installMenu(getWindow: () => BrowserWindow | null): void {
             label: app.name,
             submenu: [
               { role: "about" as const },
+              { label: "Check for Updates…", click: checkForUpdates },
               { type: "separator" as const },
               { label: "Settings…", accelerator: "Cmd+,", click: send("openSettings") },
               { type: "separator" as const },

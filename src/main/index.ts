@@ -10,6 +10,7 @@ import { changedFiles, currentBranch, patchFor } from "./git";
 import { locatePi } from "./pi/locate";
 import { TerminalHost } from "./terminal";
 import { installDockMenu, installMenu } from "./menu";
+import { Updater } from "./updater";
 
 // The dev binary is Electron.app, whose bundle name shows in the menu bar; the name here fixes
 // app.getName(), the About panel, the user-data folder, and the menu labels in both dev and packaged builds.
@@ -24,6 +25,7 @@ app.setAboutPanelOptions({
 
 const host = new SessionHost();
 const terminals = new TerminalHost();
+const updater = new Updater();
 const openedFolders = new Set<string>();
 let win: BrowserWindow | null = null;
 
@@ -172,6 +174,12 @@ function registerIpc(): void {
   ipcMain.handle(IPC.terminalWrite, (_e, id: string, data: string) => terminals.write(id, data));
   ipcMain.handle(IPC.terminalResize, (_e, id: string, cols: number, rows: number) => terminals.resize(id, cols, rows));
   ipcMain.handle(IPC.terminalClose, (_e, id: string) => terminals.close(id));
+
+  ipcMain.handle(IPC.updateState, () => updater.state);
+  ipcMain.handle(IPC.updateCheck, () => updater.check(false));
+  ipcMain.handle(IPC.updateInstall, () => updater.install());
+  ipcMain.handle(IPC.updateRestart, () => updater.restart());
+  ipcMain.handle(IPC.updateOpenRelease, () => updater.openRelease());
 }
 
 function listProjectFiles(cwd: string): Promise<string[]> {
@@ -188,6 +196,7 @@ function listProjectFiles(cwd: string): Promise<string[]> {
   });
 }
 
+updater.on("state", (state) => send(IPC.updateChanged, state));
 terminals.on("data", (p) => send(IPC.terminalData, p));
 terminals.on("exit", (p) => send(IPC.terminalExit, p));
 
@@ -204,8 +213,9 @@ app.whenReady().then(() => {
     app.dock?.setIcon(join(__dirname, "../../build/icon.png"));
   }
   applyTheme(loadSettings().theme);
-  installMenu(() => win);
+  installMenu(() => win, () => void updater.check(false));
   installDockMenu(() => win);
+  updater.start();
   registerIpc();
   createWindow();
   watchSessions();
@@ -223,4 +233,5 @@ app.on("before-quit", () => {
   gitWatcher?.close();
   host.shutdown();
   terminals.shutdown();
+  updater.stop();
 });

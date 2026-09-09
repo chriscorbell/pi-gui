@@ -24,5 +24,7 @@ jobs:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
       - uses: softprops/action-gh-release@v2
         with:
-          files: release/*.dmg
+          files: |
+            release/*.dmg
+            release/*.zip
           generate_release_notes: true
