@@ -4,6 +4,7 @@ import { useApp } from "@/store/app";
 import { bridge } from "@/lib/bridge";
 import { buildTranscript, promptHistory } from "@/lib/transcript";
 import { Menu, MenuContent, MenuItem, MenuLabel, MenuTrigger } from "@/components/ui";
+import { ContextMeter } from "@/components/ContextStrip";
 import { cn, formatTokens } from "@/lib/utils";
 
 interface Attachment {
@@ -349,6 +350,11 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
               ))}
             </MenuContent>
           </Menu>
+          {session?.stats?.contextUsage && (
+            <div className="ml-1.5 flex h-7 items-center text-[12px] text-fg-muted">
+              <ContextMeter percent={session.stats.contextUsage.percent} tokens={session.stats.contextUsage.tokens} window={session.stats.contextUsage.contextWindow} />
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-1">
           {working && (
