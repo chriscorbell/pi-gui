@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/logo.svg" width="96" alt="Pi"></p>
+
 # Pi
 
 A macOS desktop client for the [pi](https://github.com/earendil-works/pi-mono) coding agent, laid out like T3 Code: projects and sessions on the left, the conversation in the middle, working-tree changes on the right.

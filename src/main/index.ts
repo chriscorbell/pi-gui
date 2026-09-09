@@ -170,6 +170,9 @@ host.on("live", (state) => {
 });
 
 app.whenReady().then(() => {
+  if (!app.isPackaged && process.platform === "darwin") {
+    app.dock?.setIcon(join(__dirname, "../../build/icon.png"));
+  }
   applyTheme(loadSettings().theme);
   registerIpc();
   createWindow();
