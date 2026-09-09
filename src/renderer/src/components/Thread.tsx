@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { AlertTriangle, RotateCw } from "lucide-react";
 import { useApp } from "@/store/app";
 import { buildTranscript } from "@/lib/transcript";
@@ -21,26 +21,44 @@ export function Thread() {
 
   const items = useMemo(() => (session ? buildTranscript(session.entries, session.leafId) : []), [session?.entries, session?.leafId]);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
+  // Anchor to the bottom while the user is at the bottom. Scrolling up detaches; scrolling back
+  // within 48px of the bottom reattaches. The listener is bound through a callback ref because the
+  // scroll container only exists once the thread has content, not while the hero layout is showing.
+  const scrollEl = useRef<HTMLDivElement | null>(null);
   const stickToBottom = useRef(true);
-  useEffect(() => {
-    const el = scrollRef.current;
+  const onScroll = useCallback(() => {
+    const el = scrollEl.current;
     if (!el) return;
-    const onScroll = () => {
-      stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
-    };
-    el.addEventListener("scroll", onScroll, { passive: true });
-    return () => el.removeEventListener("scroll", onScroll);
-  }, [key]);
+    stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
+  }, []);
+  const setScrollEl = useCallback(
+    (el: HTMLDivElement | null) => {
+      scrollEl.current?.removeEventListener("scroll", onScroll);
+      scrollEl.current = el;
+      if (el) {
+        el.addEventListener("scroll", onScroll, { passive: true });
+        stickToBottom.current = true;
+        el.scrollTop = el.scrollHeight;
+      }
+    },
+    [onScroll],
+  );
   useEffect(() => {
-    const el = scrollRef.current;
+    const el = scrollEl.current;
     if (el && stickToBottom.current) el.scrollTop = el.scrollHeight;
   });
   useEffect(() => {
     stickToBottom.current = true;
-    const el = scrollRef.current;
+    const el = scrollEl.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [key]);
+  // Sending a prompt reattaches, the same way switching Sessions does.
+  const userCount = items.filter((i) => i.kind === "user").length;
+  useEffect(() => {
+    stickToBottom.current = true;
+    const el = scrollEl.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [userCount]);
 
   if (!key || !session) {
     return (
@@ -106,7 +124,7 @@ export function Thread() {
         </div>
       ) : (
         <>
-          <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
+          <div ref={setScrollEl} className="min-h-0 flex-1 overflow-y-auto">
             <div className="mx-auto w-full max-w-[860px] px-6 pt-2 pb-4">
               {session.loading && items.length === 0 ? (
                 <div className="flex items-center gap-2 py-10 text-[13.5px] text-fg-muted">
