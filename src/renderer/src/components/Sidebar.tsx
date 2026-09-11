@@ -64,11 +64,11 @@ export function Sidebar() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="drag flex h-[52px] shrink-0 items-center gap-1.5 pl-[84px] pr-2">
-        <IconButton label="Hide sidebar (Cmd+B)" onClick={() => void update({ sidebarCollapsed: true })}>
+      <div className="drag flex h-[52px] shrink-0 items-center pl-[84px] pr-2">
+        <Glyph className="h-[17px] w-[17px] text-fg" />
+        <IconButton label="Hide sidebar (Cmd+B)" className="ml-auto" onClick={() => void update({ sidebarCollapsed: true })}>
           <PanelLeft className="h-4 w-4" strokeWidth={1.75} />
         </IconButton>
-        <Glyph className="h-[22px] w-[22px] text-fg" />
       </div>
 
       <div className="px-2">
