@@ -1,8 +1,8 @@
 {
-  "name": "pi-gui",
-  "productName": "Pi",
-  "version": "0.3.13",
-  "description": "A macOS desktop client for the pi coding agent",
+  "name": "pier",
+  "productName": "Pier",
+  "version": "0.4.0",
+  "description": "Pier: a macOS desktop client for the pi coding agent",
   "license": "MIT",
   "private": true,
   "type": "module",

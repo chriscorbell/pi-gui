@@ -231,7 +231,7 @@ export function Sidebar() {
           ) : (
             <button onClick={() => void installUpdate()} className="flex w-full items-center gap-2 text-left text-fg hover:text-accent">
               <ArrowDownToLine className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
-              <span className="flex-1">Pi {upd.latestVersion} is available</span>
+              <span className="flex-1">Pier {upd.latestVersion} is available</span>
               <span className="text-accent">Install</span>
             </button>
           )}

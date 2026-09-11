@@ -1,6 +1,6 @@
 import { app, shell } from "electron";
 import { EventEmitter } from "node:events";
-import { createWriteStream } from "node:fs";
+import { createWriteStream, renameSync } from "node:fs";
 import { mkdtemp, readdir, rename, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, dirname, join } from "node:path";
@@ -11,7 +11,7 @@ import { pipeline } from "node:stream/promises";
 import type { UpdateState } from "@shared/contract";
 
 const run = promisify(execFile);
-const REPO = "chriscorbell/pi-gui";
+const REPO = "chriscorbell/pier";
 const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
 interface Release {
@@ -46,6 +46,7 @@ export class Updater extends EventEmitter<{ state: [UpdateState] }> {
   state: UpdateState = { status: "idle", currentVersion: app.getVersion() };
   private timer: NodeJS.Timeout | null = null;
   private release: Release | null = null;
+  private installedPath: string | null = null;
 
   private set(patch: Partial<UpdateState>): void {
     this.state = { ...this.state, ...patch };
@@ -54,6 +55,7 @@ export class Updater extends EventEmitter<{ state: [UpdateState] }> {
 
   start(): void {
     if (!app.isPackaged) return;
+    if (this.renameBundleIfNeeded()) return;
     // Bundles displaced by earlier updates sit beside us. macOS App Management does not let an app
     // delete files inside another app bundle, but moving the bundle is allowed, so they go to the
     // Trash. The previous process may still be exiting as this one starts, hence the retries.
@@ -74,6 +76,24 @@ export class Updater extends EventEmitter<{ state: [UpdateState] }> {
     this.timer.unref();
   }
 
+  /**
+   * An update installed by an older build lands at the old bundle path, so after a product rename
+   * the file on disk can be Pi.app while the app inside is Pier. Move it to its proper name and
+   * relaunch from there. Returns true when a relaunch was started.
+   */
+  private renameBundleIfNeeded(): boolean {
+    const appPath = process.execPath.split(".app/")[0] + ".app";
+    const desired = join(dirname(appPath), `${app.name}.app`);
+    if (appPath === desired) return false;
+    try {
+      renameSync(appPath, desired);
+    } catch {
+      return false;
+    }
+    execFile("open", ["-n", desired], () => app.exit(0));
+    return true;
+  }
+
   async check(silent = false): Promise<void> {
     if (this.state.status === "downloading" || this.state.status === "ready") return;
     if (!app.isPackaged) {
@@ -83,7 +103,7 @@ export class Updater extends EventEmitter<{ state: [UpdateState] }> {
     this.set({ status: "checking", error: undefined });
     try {
       const res = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
-        headers: { Accept: "application/vnd.github+json", "User-Agent": `pi-gui/${app.getVersion()}` },
+        headers: { Accept: "application/vnd.github+json", "User-Agent": `pier/${app.getVersion()}` },
       });
       if (!res.ok) throw new Error(`GitHub responded ${res.status}`);
       const release = (await res.json()) as Release;
@@ -116,7 +136,7 @@ export class Updater extends EventEmitter<{ state: [UpdateState] }> {
       });
       work = await mkdtemp(join(tmpdir(), "pi-update-"));
       const zipPath = join(work, asset.name);
-      const res = await fetch(asset.browser_download_url, { headers: { "User-Agent": `pi-gui/${app.getVersion()}` } });
+      const res = await fetch(asset.browser_download_url, { headers: { "User-Agent": `pier/${app.getVersion()}` } });
       if (!res.ok || !res.body) throw new Error(`Download failed with ${res.status}`);
       let received = 0;
       const total = asset.size;
@@ -139,17 +159,20 @@ export class Updater extends EventEmitter<{ state: [UpdateState] }> {
       if (!bundle) throw new Error("The zip did not contain an app bundle");
       const newApp = join(extractDir, bundle);
 
-      // Swap: move the running bundle aside under a unique name, then move the new one into place.
+      // Swap: move the running bundle aside under a unique name, then move the new one into place
+      // under its own name, which differs from ours only across a product rename.
+      const targetApp = join(parent, bundle);
       const oldApp = join(parent, `.${basename(appPath)}.old-${Date.now()}`);
       await rename(appPath, oldApp);
       try {
-        await rename(newApp, appPath);
+        await rename(newApp, targetApp);
       } catch (err) {
         await rename(oldApp, appPath);
         throw err;
       }
       // The old bundle still backs the running process and cannot be fully deleted until we exit;
       // start() removes it on the next launch.
+      this.installedPath = targetApp;
       this.set({ status: "ready", progress: 1 });
     } catch (err) {
       this.set({ status: "available", error: String((err as Error).message ?? err), progress: undefined });
@@ -160,6 +183,12 @@ export class Updater extends EventEmitter<{ state: [UpdateState] }> {
 
   restart(): void {
     if (this.state.status !== "ready") return;
+    const current = process.execPath.split(".app/")[0] + ".app";
+    if (this.installedPath && this.installedPath !== current) {
+      // relaunch() reuses our executable path, which no longer exists under that name.
+      execFile("open", ["-n", this.installedPath], () => app.exit(0));
+      return;
+    }
     app.relaunch();
     app.exit(0);
   }

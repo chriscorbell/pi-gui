@@ -1,11 +1,15 @@
-# Pi (desktop)
+# Pier
 
-A macOS desktop client for the pi coding agent. It drives the real pi program, so everything pi already knows (sessions, extensions, models, commands) is the source of truth; the app adds a graphical way to see and steer it.
+Pier is a macOS desktop client for the pi coding agent. It drives the real pi program, so everything pi already knows (sessions, extensions, models, commands) is the source of truth; the app adds a graphical way to see and steer it.
 
 ## Language
 
+**Pier**:
+This app. The place a pi Session docks. Never called Pi, which is the agent.
+_Avoid_: pi-gui, the GUI, the client
+
 **Pi**:
-The coding agent program this app drives, installed separately as `@earendil-works/pi-coding-agent`. Also the app's own display title.
+The coding agent program Pier drives, installed separately as `@earendil-works/pi-coding-agent`.
 _Avoid_: agent, backend, CLI
 
 **Project**:

@@ -33,7 +33,7 @@ export class TerminalHost extends EventEmitter<TerminalEvents> {
       cols: Math.max(2, cols),
       rows: Math.max(2, rows),
       cwd: existsSync(cwd) ? cwd : homedir(),
-      env: { ...process.env, TERM: "xterm-256color", TERM_PROGRAM: "pi-gui", COLORTERM: "truecolor" } as Record<string, string>,
+      env: { ...process.env, TERM: "xterm-256color", TERM_PROGRAM: "pier", COLORTERM: "truecolor" } as Record<string, string>,
     });
     const term: Term = { id, proc, cwd };
     console.log(`[terminal] spawned ${shell} pid ${proc.pid} in ${cwd}`);

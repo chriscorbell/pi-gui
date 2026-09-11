@@ -14,9 +14,9 @@ import { Updater } from "./updater";
 
 // The dev binary is Electron.app, whose bundle name shows in the menu bar; the name here fixes
 // app.getName(), the About panel, the user-data folder, and the menu labels in both dev and packaged builds.
-app.setName("Pi");
+app.setName("Pier");
 app.setAboutPanelOptions({
-  applicationName: "Pi",
+  applicationName: "Pier",
   applicationVersion: app.getVersion(),
   version: "",
   copyright: "MIT License",

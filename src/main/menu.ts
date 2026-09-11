@@ -100,7 +100,7 @@ export function installMenu(getWindow: () => BrowserWindow | null, checkForUpdat
     {
       role: "help",
       submenu: [
-        { label: "Pi on GitHub", click: () => void shell.openExternal("https://github.com/chriscorbell/pi-gui") },
+        { label: "Pier on GitHub", click: () => void shell.openExternal("https://github.com/chriscorbell/pier") },
         { label: "pi Documentation", click: () => void shell.openExternal("https://github.com/earendil-works/pi-mono") },
       ],
     },

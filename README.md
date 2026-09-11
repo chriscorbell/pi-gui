@@ -1,17 +1,21 @@
-<p align="center"><img src="assets/logo.svg" width="96" alt="Pi"></p>
+<p align="center"><img src="assets/logo.svg" width="96" alt="Pier"></p>
 
-# Pi
+# Pier
 
 A macOS desktop client for the [pi](https://github.com/earendil-works/pi-mono) coding agent, laid out like T3 Code: projects and sessions on the left, the conversation in the middle, working-tree changes on the right.
 
 The app drives the `pi` you already have installed. It spawns `pi --mode rpc` per open session, so your models, settings, extensions, and slash commands work unchanged, and a session started here resumes with `pi -c` in a terminal.
+
+## Why Pier
+
+A pier is where things dock. Pier is the desk pi works from, and its name keeps the P from pi without pretending to be the agent.
 
 ## Installing the DMG
 
 The app is ad-hoc signed, not notarized, so the first launch of a downloaded copy shows a Gatekeeper prompt. Open System Settings, Privacy & Security, and click Open Anyway, or clear the quarantine flag once:
 
 ```bash
-xattr -dr com.apple.quarantine /Applications/Pi.app
+xattr -dr com.apple.quarantine /Applications/Pier.app
 ```
 
 Updates the app installs itself never carry the flag, so this is a one-time step.
@@ -29,7 +33,7 @@ pnpm install
 pnpm dev
 ```
 
-`pnpm dist` builds an unsigned DMG and zip into `release/`. Tagged pushes (`v*`) build both in GitHub Actions and attach them to a release. The installed app checks GitHub Releases on launch and every six hours, and updates itself from the zip when you click Install; Check for Updates in the Pi menu does the same on demand. Unsigned apps cannot use Squirrel, so the update swaps the bundle in place and relaunches, which needs the app to live in a folder you own, such as `/Applications` or `~/Applications`.
+`pnpm dist` builds an unsigned DMG and zip into `release/`. Tagged pushes (`v*`) build both in GitHub Actions and attach them to a release. The installed app checks GitHub Releases on launch and every six hours, and updates itself from the zip when you click Install; Check for Updates in the Pier menu does the same on demand. Unsigned apps cannot use Squirrel, so the update swaps the bundle in place and relaunches, which needs the app to live in a folder you own, such as `/Applications` or `~/Applications`.
 
 ## What it does
 

@@ -422,7 +422,7 @@ export const useApp = create<AppState>((set, get) => {
         set({ update });
         if (update.status === "available" && update.latestVersion && announced !== update.latestVersion) {
           announced = update.latestVersion;
-          get().pushToast(`Pi ${update.latestVersion} is available. Install it from the sidebar or the Pi menu.`, "info");
+          get().pushToast(`Pier ${update.latestVersion} is available. Install it from the sidebar or the Pier menu.`, "info");
         }
         // State is re-emitted on every progress tick; only a new error message deserves a toast.
         if (update.error && update.error !== lastError) get().pushToast(update.error, "warning");

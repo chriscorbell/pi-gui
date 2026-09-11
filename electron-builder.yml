@@ -1,5 +1,5 @@
-appId: com.chriscorbell.pi-gui
-productName: Pi
+appId: com.chriscorbell.pier
+productName: Pier
 copyright: MIT License
 directories:
   output: release
@@ -21,10 +21,10 @@ mac:
   darkModeSupport: true
   minimumSystemVersion: "13.0"
   extendInfo:
-    CFBundleName: Pi
-    CFBundleDisplayName: Pi
+    CFBundleName: Pier
+    CFBundleDisplayName: Pier
     NSHumanReadableCopyright: MIT License
 dmg:
-  artifactName: Pi-${version}-${arch}.${ext}
+  artifactName: Pier-${version}-${arch}.${ext}
 npmRebuild: true
 afterPack: build/after-pack.cjs

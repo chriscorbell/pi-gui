@@ -53,7 +53,7 @@ export function SettingsSheet() {
           />
         </Field>
         <Field
-          label={`Pi ${upd.currentVersion || ""}`}
+          label={`Pier ${upd.currentVersion || ""}`}
           hint={
             upd.status === "checking"
               ? "Checking GitHub for a newer release"
