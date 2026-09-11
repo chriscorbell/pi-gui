@@ -64,7 +64,7 @@ export function Sidebar() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="drag flex h-[52px] shrink-0 items-center pl-[84px] pr-2">
+      <div className="drag flex h-[52px] shrink-0 items-center pl-[98px] pr-2">
         <Glyph className="h-[17px] w-[17px] text-fg" />
         <IconButton label="Hide sidebar (Cmd+B)" className="ml-auto" onClick={() => void update({ sidebarCollapsed: true })}>
           <PanelLeft className="h-4 w-4" strokeWidth={1.75} />
