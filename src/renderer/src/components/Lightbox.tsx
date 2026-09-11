@@ -19,7 +19,7 @@ export function Lightbox({ src, open, onOpenChange }: { src: string; open: boole
             src={src}
             alt=""
             onClick={(e) => e.stopPropagation()}
-            className="lightbox-img max-h-full max-w-full rounded-lg shadow-[var(--shadow)] ring-1 ring-white/10"
+            className="lightbox-img max-h-full max-w-full shadow-[var(--shadow)]"
           />
           <Dialog.Close
             aria-label="Close preview"
