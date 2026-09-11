@@ -11,6 +11,7 @@ import { locatePi } from "./pi/locate";
 import { TerminalHost } from "./terminal";
 import { installDockMenu, installMenu } from "./menu";
 import { Updater } from "./updater";
+import { listSystemFonts } from "./fonts";
 
 // The dev binary is Electron.app, whose bundle name shows in the menu bar; the name here fixes
 // app.getName(), the About panel, the user-data folder, and the menu labels in both dev and packaged builds.
@@ -182,6 +183,7 @@ function registerIpc(): void {
   ipcMain.handle(IPC.updateOpenRelease, () => updater.openRelease());
   // The async web clipboard needs a focused document; Electron's clipboard does not.
   ipcMain.handle(IPC.clipboardWrite, (_e, text: string) => clipboard.writeText(text));
+  ipcMain.handle(IPC.fontsList, () => listSystemFonts());
 }
 
 function listProjectFiles(cwd: string): Promise<string[]> {

@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 const Markdown = memo(function Markdown({ text }: { text: string }) {
   return (
-    <div className="prose-pi text-[14.5px] leading-[1.6]">
+    <div className="prose-pi text-ui-[14.5px] leading-[1.6]">
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
     </div>
   );
@@ -26,7 +26,7 @@ function Thinking({ text, streaming }: { text: string; streaming: boolean }) {
   const expanded = open ?? defaultExpanded;
   if (!expanded) {
     return (
-      <button onClick={() => setOpen(true)} className="flex items-center gap-2 py-1 text-[13px] text-fg-muted transition-colors hover:text-fg">
+      <button onClick={() => setOpen(true)} className="flex items-center gap-2 py-1 text-ui-[13px] text-fg-muted transition-colors hover:text-fg">
         {streaming ? <Spinner /> : <ChevronRight className="h-3.5 w-3.5" strokeWidth={2} />}
         <span>{streaming ? "Thinking" : "Thought"}</span>
         {!streaming && text && <span className="max-w-[420px] truncate text-fg-faint">{text.replace(/\s+/g, " ").slice(0, 120)}</span>}
@@ -34,8 +34,8 @@ function Thinking({ text, streaming }: { text: string; streaming: boolean }) {
     );
   }
   return (
-    <div onClick={() => setOpen(false)} className="cursor-pointer rounded-md border border-border bg-bg-sunken px-3 py-2 text-[13.5px] leading-relaxed text-fg-muted">
-      <div className="mb-1 flex items-center gap-2 text-[12.5px] text-fg-faint">
+    <div onClick={() => setOpen(false)} className="cursor-pointer rounded-md border border-border bg-bg-sunken px-3 py-2 text-ui-[13.5px] leading-relaxed text-fg-muted">
+      <div className="mb-1 flex items-center gap-2 text-ui-[12.5px] text-fg-faint">
         {streaming ? <Spinner /> : <ChevronRight className="h-3.5 w-3.5 rotate-90" strokeWidth={2} />}
         {streaming ? "Thinking" : "Thought"}
       </div>
@@ -100,11 +100,11 @@ function AssistantItem({ message, results, toolRuns }: { message: AssistantMsg; 
         )}
         <AssistantBlocks content={message.content} results={results} toolRuns={toolRuns} streaming={false} />
       {message.stopReason === "error" && (
-        <div className="selectable mt-2 rounded-md border border-danger/30 bg-danger-soft px-3 py-2 text-[13.5px] text-danger">
+        <div className="selectable mt-2 rounded-md border border-danger/30 bg-danger-soft px-3 py-2 text-ui-[13.5px] text-danger">
           {message.errorMessage ?? "The model returned an error."}
         </div>
       )}
-      {message.stopReason === "aborted" && <div className="mt-1 text-[12.5px] text-fg-faint">Aborted</div>}
+      {message.stopReason === "aborted" && <div className="mt-1 text-ui-[12.5px] text-fg-faint">Aborted</div>}
       </div>
     </CopyMenu>
   );
@@ -115,7 +115,7 @@ function UserItem({ text, images }: { text: string; images: ImageBlock[] }) {
     <CopyMenu text={text}>
       <div className="group flex items-start justify-end gap-1 py-2">
         <CopyButton text={text} className="mt-1.5" />
-        <div className="selectable max-w-[85%] rounded-lg bg-surface-raised border border-border px-3.5 py-2 text-[14.5px] leading-[1.55] whitespace-pre-wrap break-words">
+        <div className="selectable max-w-[85%] rounded-lg bg-surface-raised border border-border px-3.5 py-2 text-ui-[14.5px] leading-[1.55] whitespace-pre-wrap break-words">
           {images.length > 0 && (
             <div className={cn("flex flex-wrap justify-end gap-2", text && "mb-2")}>
               {images.map((img, i) => (
@@ -134,7 +134,7 @@ function BashItem({ command, output, exitCode }: { command: string; output: stri
   const [open, setOpen] = useState(false);
   return (
     <CopyMenu text={output} label="Copy output">
-    <div className="my-1 rounded-md border border-border bg-bg-sunken font-mono text-[13px]">
+    <div className="my-1 rounded-md border border-border bg-bg-sunken font-mono text-ui-[13px]">
       <button onClick={() => setOpen(!open)} className="flex w-full items-center gap-2 px-3 py-1.5 text-left">
         <Terminal className="h-3.5 w-3.5 shrink-0 text-fg-muted" strokeWidth={1.75} />
         <span className="min-w-0 flex-1 truncate">{command}</span>
@@ -150,7 +150,7 @@ function CompactionItem({ summary, tokensBefore }: { summary: string; tokensBefo
   const [open, setOpen] = useState(false);
   return (
     <div className="my-3">
-      <button onClick={() => setOpen(!open)} className="flex w-full items-center gap-2 text-[12.5px] text-fg-faint">
+      <button onClick={() => setOpen(!open)} className="flex w-full items-center gap-2 text-ui-[12.5px] text-fg-faint">
         <span className="h-px flex-1 bg-border" />
         <Layers className="h-3.5 w-3.5" strokeWidth={1.75} />
         <span>Context compacted from {Math.round(tokensBefore / 1000)}K tokens</span>
@@ -194,7 +194,7 @@ export function Transcript({
     hadPartial.current = partial !== null;
   });
   if (items.length === 0 && !partial) {
-    return <div className="py-16 text-center text-[13.5px] text-fg-faint">Send a message to start.</div>;
+    return <div className="py-16 text-center text-ui-[13.5px] text-fg-faint">Send a message to start.</div>;
   }
   return (
     <div className="flex flex-col">
@@ -226,14 +226,14 @@ export function Transcript({
             );
           case "custom":
             return (
-              <div key={item.id} className={cn("my-1 rounded-md border border-border bg-bg-sunken px-3 py-2 text-[13.5px]", fresh(item.id))}>
-                <div className="mb-0.5 text-[11.5px] uppercase tracking-wide text-fg-faint">{item.customType}</div>
+              <div key={item.id} className={cn("my-1 rounded-md border border-border bg-bg-sunken px-3 py-2 text-ui-[13.5px]", fresh(item.id))}>
+                <div className="mb-0.5 text-ui-[11.5px] uppercase tracking-wide text-fg-faint">{item.customType}</div>
                 <Markdown text={item.text} />
               </div>
             );
           case "note":
             return (
-              <div key={item.id} className="py-1 text-center text-[12px] text-fg-faint">
+              <div key={item.id} className="py-1 text-center text-ui-[12px] text-fg-faint">
                 {item.text}
               </div>
             );
@@ -245,7 +245,7 @@ export function Transcript({
         </div>
       )}
       {working && !partial && (
-        <div className="anim-item flex items-center gap-2 py-3 text-[13px] text-fg-muted">
+        <div className="anim-item flex items-center gap-2 py-3 text-ui-[13px] text-fg-muted">
           <Spinner /> Waiting for the model
         </div>
       )}

@@ -7,6 +7,7 @@ import {
   type PiEvent,
   type ProjectSummary,
   type SessionLiveState,
+  type SystemFont,
   type UpdateState,
 } from "@shared/contract";
 
@@ -37,6 +38,9 @@ export const bridge = {
     respond: (key: string, id: string, response: ExtensionUiResponse) =>
       invoke(IPC.piUiRespond, key, id, response) as Promise<void>,
     locate: () => invoke(IPC.piLocate) as Promise<string | null>,
+  },
+  fonts: {
+    list: () => invoke(IPC.fontsList) as Promise<SystemFont[]>,
   },
   git: {
     changes: (cwd: string) => invoke(IPC.gitChanges, cwd) as Promise<ChangedFile[]>,

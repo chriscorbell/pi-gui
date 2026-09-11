@@ -3,6 +3,7 @@ import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { bridge } from "@/lib/bridge";
+import { useApp } from "@/store/app";
 
 function cssVar(name: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -48,8 +49,28 @@ function bindListeners() {
   });
 }
 
+function terminalFont(family: string | null): string {
+  const stack = cssVar("--font-mono") || "Menlo, monospace";
+  return family ? `"${family.replace(/"/g, "")}", ${stack}` : stack;
+}
+
 export function TerminalView({ sessionKey, cwd }: { sessionKey: string; cwd: string }) {
   const hostRef = useRef<HTMLDivElement>(null);
+  const fontFamily = useApp((s) => s.settings.terminalFont);
+  const fontSize = useApp((s) => s.settings.terminalFontSize);
+
+  // Font changes apply to the live instance; fit() recomputes cols and rows for the new cell size.
+  useEffect(() => {
+    const inst = instances.get(sessionKey);
+    if (!inst) return;
+    inst.term.options.fontFamily = terminalFont(fontFamily);
+    inst.term.options.fontSize = fontSize || 13;
+    try {
+      inst.fit.fit();
+    } catch {
+      /* not laid out */
+    }
+  }, [sessionKey, fontFamily, fontSize]);
 
   useEffect(() => {
     bindListeners();
@@ -58,8 +79,8 @@ export function TerminalView({ sessionKey, cwd }: { sessionKey: string; cwd: str
     let inst = instances.get(sessionKey);
     if (!inst) {
       const term = new Terminal({
-        fontFamily: cssVar("--font-mono") || "Menlo, monospace",
-        fontSize: 13,
+        fontFamily: terminalFont(useApp.getState().settings.terminalFont),
+        fontSize: useApp.getState().settings.terminalFontSize || 13,
         lineHeight: 1.25,
         cursorBlink: true,
         cursorStyle: "bar",

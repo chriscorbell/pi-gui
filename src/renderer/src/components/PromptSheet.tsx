@@ -36,7 +36,7 @@ export function PromptSheet({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder={placeholder}
-          className="h-9 w-full rounded-md border border-border-strong bg-bg-sunken px-2.5 text-[14px] text-fg placeholder:text-fg-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+          className="h-9 w-full rounded-md border border-border-strong bg-bg-sunken px-2.5 text-ui-[14px] text-fg placeholder:text-fg-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
         />
         <div className="mt-3 flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onClose}>
@@ -70,7 +70,7 @@ export function ConfirmSheet({
 }) {
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()} title={title}>
-      {message && <p className="mb-4 text-[14px] text-fg-muted">{message}</p>}
+      {message && <p className="mb-4 text-ui-[14px] text-fg-muted">{message}</p>}
       <div className="flex justify-end gap-2">
         <Button variant="ghost" onClick={onClose}>
           Cancel

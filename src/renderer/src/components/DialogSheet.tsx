@@ -25,7 +25,7 @@ export function DialogSheet() {
             <button
               key={o}
               onClick={() => void respond(key, dialog.id, { value: o })}
-              className="rounded-md border border-border px-3 py-2 text-left text-[14px] transition-colors hover:bg-hover"
+              className="rounded-md border border-border px-3 py-2 text-left text-ui-[14px] transition-colors hover:bg-hover"
             >
               {o}
             </button>
@@ -37,7 +37,7 @@ export function DialogSheet() {
       )}
       {dialog.method === "confirm" && (
         <div>
-          {dialog.message && <p className="selectable mb-4 whitespace-pre-wrap text-[14px] text-fg-muted">{dialog.message}</p>}
+          {dialog.message && <p className="selectable mb-4 whitespace-pre-wrap text-ui-[14px] text-fg-muted">{dialog.message}</p>}
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={() => void respond(key, dialog.id, { confirmed: false })}>
               No
@@ -61,7 +61,7 @@ export function DialogSheet() {
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder={dialog.placeholder}
-              className="h-9 w-full rounded-md border border-border-strong bg-bg-sunken px-2.5 text-[14px] text-fg placeholder:text-fg-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+              className="h-9 w-full rounded-md border border-border-strong bg-bg-sunken px-2.5 text-ui-[14px] text-fg placeholder:text-fg-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
             />
           ) : (
             <textarea
@@ -69,7 +69,7 @@ export function DialogSheet() {
               value={text}
               onChange={(e) => setText(e.target.value)}
               rows={14}
-              className="w-full resize-y rounded-md border border-border-strong bg-bg-sunken p-2.5 font-mono text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+              className="w-full resize-y rounded-md border border-border-strong bg-bg-sunken p-2.5 font-mono text-ui-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
             />
           )}
           <div className="mt-3 flex justify-end gap-2">

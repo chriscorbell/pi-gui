@@ -19,7 +19,7 @@ function BranchBadge({ cwd }: { cwd: string }) {
   }, [cwd]);
   if (!branch) return null;
   return (
-    <span className="no-drag flex h-7 items-center gap-1.5 rounded-md border border-border px-2 text-[12.5px] text-fg-muted" title={`Current branch: ${branch}`}>
+    <span className="no-drag flex h-7 items-center gap-1.5 rounded-md border border-border px-2 text-ui-[12.5px] text-fg-muted" title={`Current branch: ${branch}`}>
       <GitBranch className="h-3.5 w-3.5" strokeWidth={2} />
       {branch}
     </span>
@@ -43,7 +43,7 @@ export function MainHeader() {
           <PanelLeft className="h-4 w-4" strokeWidth={1.75} />
         </IconButton>
       )}
-      <div className="flex min-w-0 flex-1 items-center gap-2 text-[14px]">
+      <div className="flex min-w-0 flex-1 items-center gap-2 text-ui-[14px]">
         {session && (
           <>
             <Braces className="h-3.5 w-3.5 shrink-0 text-fg-faint" strokeWidth={1.75} />

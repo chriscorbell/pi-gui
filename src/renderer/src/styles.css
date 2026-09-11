@@ -2,6 +2,11 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Interface sizes are written as text-ui-[Npx] and scale with the font size setting (14px = 1). */
+@utility text-ui-* {
+  font-size: calc(--value([length]) * var(--ui-scale));
+}
+
 /* Light palette on :root, dark palette on .dark. One accent, one neutral family (zinc). */
 :root {
   --bg: oklch(0.985 0.002 250);
@@ -28,6 +33,7 @@
   --radius-lg: 12px;
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
   --font-mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  --ui-scale: 1;
   color-scheme: light;
 }
 
@@ -92,7 +98,7 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: calc(14px * var(--ui-scale));
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
@@ -200,7 +206,7 @@ a[href] {
   border-radius: var(--radius);
   padding: 10px 12px;
   overflow-x: auto;
-  font-size: 13px;
+  font-size: calc(13px * var(--ui-scale));
   line-height: 1.5;
 }
 .prose-pi pre code {
@@ -222,7 +228,7 @@ a[href] {
 }
 .prose-pi table {
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-scale));
 }
 .prose-pi th,
 .prose-pi td {
@@ -426,5 +432,5 @@ a[href] {
 /* @pierre/diffs theming hooks */
 [data-diff-root] {
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: calc(13px * var(--ui-scale));
 }

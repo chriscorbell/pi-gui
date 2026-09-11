@@ -6,7 +6,7 @@ import { bridge } from "@/lib/bridge";
 import { cn } from "@/lib/utils";
 
 const itemClass =
-  "flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-[13.5px] text-fg outline-none data-[highlighted]:bg-hover data-[disabled]:pointer-events-none data-[disabled]:opacity-40";
+  "flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-ui-[13.5px] text-fg outline-none data-[highlighted]:bg-hover data-[disabled]:pointer-events-none data-[disabled]:opacity-40";
 
 async function copy(text: string, toast: (m: string) => void): Promise<void> {
   try {

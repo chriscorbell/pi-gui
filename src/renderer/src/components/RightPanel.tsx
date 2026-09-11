@@ -23,7 +23,7 @@ export function RightPanel() {
             key={id}
             onClick={() => void update({ panelTab: id })}
             className={cn(
-              "no-drag flex h-8 items-center gap-1.5 rounded-md px-2.5 text-[13px] transition-colors",
+              "no-drag flex h-8 items-center gap-1.5 rounded-md px-2.5 text-ui-[13px] transition-colors",
               tab === id ? "bg-active text-fg" : "text-fg-muted hover:bg-hover hover:text-fg",
             )}
           >
@@ -38,7 +38,7 @@ export function RightPanel() {
         ) : key && cwd ? (
           <TerminalView sessionKey={key} cwd={cwd} />
         ) : (
-          <div className="p-4 text-[13px] text-fg-faint">Select a session to open a shell in its project.</div>
+          <div className="p-4 text-ui-[13px] text-fg-faint">Select a session to open a shell in its project.</div>
         )}
       </div>
     </div>

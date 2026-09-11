@@ -13,7 +13,7 @@ export function Toasts() {
           key={t.id}
           className={cn(
             t.leaving ? "anim-fade-out" : "anim-fade-up",
-            "pointer-events-auto flex items-start gap-2 rounded-lg border bg-surface-raised px-3 py-2.5 text-[13.5px] shadow-[var(--shadow)]",
+            "pointer-events-auto flex items-start gap-2 rounded-lg border bg-surface-raised px-3 py-2.5 text-ui-[13.5px] shadow-[var(--shadow)]",
             t.kind === "error" ? "border-danger/40" : t.kind === "warning" ? "border-warn/40" : "border-border",
           )}
         >

@@ -87,7 +87,7 @@ export function Sidebar() {
                   }
                 }}
                 placeholder="Search sessions"
-                className="min-w-0 flex-1 bg-transparent text-[13.5px] text-fg placeholder:text-fg-faint focus:outline-none"
+                className="min-w-0 flex-1 bg-transparent text-ui-[13.5px] text-fg placeholder:text-fg-faint focus:outline-none"
               />
               <button
                 onClick={() => {
@@ -103,7 +103,7 @@ export function Sidebar() {
           ) : (
             <button
               onClick={() => setSearching(true)}
-              className="flex h-8 flex-1 items-center gap-2 rounded-md px-2 text-[13.5px] text-fg-muted transition-colors hover:bg-hover hover:text-fg"
+              className="flex h-8 flex-1 items-center gap-2 rounded-md px-2 text-ui-[13.5px] text-fg-muted transition-colors hover:bg-hover hover:text-fg"
             >
               <Search className="h-3.5 w-3.5" strokeWidth={2} />
               Search
@@ -127,7 +127,7 @@ export function Sidebar() {
               const all = allCwds.every((c) => collapsed.has(c));
               void update({ collapsedProjects: all ? [] : allCwds });
             }}
-            className="flex h-8 flex-1 items-center gap-2 rounded-md px-2 text-[13.5px] text-fg-muted transition-colors hover:bg-hover hover:text-fg"
+            className="flex h-8 flex-1 items-center gap-2 rounded-md px-2 text-ui-[13.5px] text-fg-muted transition-colors hover:bg-hover hover:text-fg"
           >
             <FolderPlus className="h-3.5 w-3.5 opacity-0" strokeWidth={2} />
             <span className="flex-1 text-left">All projects</span>
@@ -140,7 +140,7 @@ export function Sidebar() {
       </div>
 
       <div className="mt-2 flex-1 overflow-y-auto px-2 pb-4">
-        {allCwds.length === 0 && <div className="px-2 pt-8 text-center text-[13px] text-fg-faint">No sessions yet</div>}
+        {allCwds.length === 0 && <div className="px-2 pt-8 text-center text-ui-[13px] text-fg-faint">No sessions yet</div>}
         {allCwds.map((cwd) => {
           const project = projects.find((p) => p.cwd === cwd);
           const name = project?.name ?? cwd.split("/").filter(Boolean).pop() ?? cwd;
@@ -158,11 +158,11 @@ export function Sidebar() {
           }).length;
           return (
             <div key={cwd} className="mb-1">
-              <div className="group flex h-7 items-center gap-1 rounded-md pr-1 pl-2 text-[12.5px] hover:bg-hover">
+              <div className="group flex h-7 items-center gap-1 rounded-md pr-1 pl-2 text-ui-[12.5px] hover:bg-hover">
                 <button onClick={() => toggle(cwd)} className="flex min-w-0 flex-1 items-center gap-1.5 text-left" title={cwd}>
                   <span className="truncate font-medium text-fg-faint">{name}</span>
                   {isCollapsed && attention > 0 && (
-                    <span key={attention} className="anim-pop rounded-full bg-accent px-1.5 text-[11px] font-semibold leading-4 text-accent-fg">{attention}</span>
+                    <span key={attention} className="anim-pop rounded-full bg-accent px-1.5 text-ui-[11px] font-semibold leading-4 text-accent-fg">{attention}</span>
                   )}
                   <ChevronDown className={cn("h-3 w-3 shrink-0 text-fg-faint transition-transform duration-150", isCollapsed && "-rotate-90")} strokeWidth={2} />
                 </button>
@@ -172,7 +172,7 @@ export function Sidebar() {
               </div>
               {!isCollapsed && (
                 <div className="mt-0.5 flex flex-col gap-px">
-                  {rows.length === 0 && <div className="px-2 py-1 text-[13px] text-fg-faint">No sessions</div>}
+                  {rows.length === 0 && <div className="px-2 py-1 text-ui-[13px] text-fg-faint">No sessions</div>}
                   {rows.map((r) => {
                     const st = live[r.key];
                     const status: SessionStatus | "off" = st ? st.status : "off";
@@ -186,7 +186,7 @@ export function Sidebar() {
                           else if (r.path) void openSession(cwd, r.path);
                         }}
                         className={cn(
-                          "flex h-7 w-full items-center gap-2 rounded-md px-2 text-left text-[13.5px] transition-colors duration-100",
+                          "flex h-7 w-full items-center gap-2 rounded-md px-2 text-left text-ui-[13.5px] transition-colors duration-100",
                           selected ? "bg-active text-fg" : "text-fg-muted hover:bg-hover hover:text-fg",
                           emphasized && !selected && "text-fg",
                         )}
@@ -197,7 +197,7 @@ export function Sidebar() {
                             <StatusDot status={status} />
                           </span>
                         ) : (
-                          r.modifiedAt && <span className="shrink-0 text-[11.5px] tabular-nums text-fg-faint">{relativeTime(r.modifiedAt)}</span>
+                          r.modifiedAt && <span className="shrink-0 text-ui-[11.5px] tabular-nums text-fg-faint">{relativeTime(r.modifiedAt)}</span>
                         )}
                       </button>
                       </SessionContextMenu>
@@ -211,7 +211,7 @@ export function Sidebar() {
       </div>
 
       {(upd.status === "available" || upd.status === "downloading" || upd.status === "ready") && (
-        <div className="anim-item mx-2 mb-2 rounded-md border border-border bg-surface px-2.5 py-2 text-[12.5px]">
+        <div className="anim-item mx-2 mb-2 rounded-md border border-border bg-surface px-2.5 py-2 text-ui-[12.5px]">
           {upd.status === "ready" ? (
             <button onClick={() => void restartForUpdate()} className="flex w-full items-center gap-2 text-left text-fg hover:text-accent">
               <RotateCw className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />

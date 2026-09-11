@@ -57,14 +57,14 @@ export function DiffPanel() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex h-9 shrink-0 items-center gap-1 border-b border-border px-2 text-[12.5px] text-fg-muted">
+      <div className="flex h-9 shrink-0 items-center gap-1 border-b border-border px-2 text-ui-[12.5px] text-fg-muted">
         <span className="flex-1 pl-1">{files.length ? `${files.length} changed` : "Working tree"}</span>
         <div className="flex rounded-md border border-border p-0.5">
           {(["unified", "split"] as const).map((mode) => (
             <button
               key={mode}
               onClick={() => void updateSettings({ diffStyle: mode })}
-              className={cn("h-6 rounded px-2 text-[12px] capitalize transition-colors", diffStyle === mode ? "bg-active text-fg" : "hover:text-fg")}
+              className={cn("h-6 rounded px-2 text-ui-[12px] capitalize transition-colors", diffStyle === mode ? "bg-active text-fg" : "hover:text-fg")}
             >
               {mode}
             </button>
@@ -76,9 +76,9 @@ export function DiffPanel() {
         </IconButton>
       </div>
       {!cwd ? (
-        <div className="p-4 text-[13px] text-fg-faint">Select a session to see its working tree.</div>
+        <div className="p-4 text-ui-[13px] text-fg-faint">Select a session to see its working tree.</div>
       ) : files.length === 0 ? (
-        <div className="p-4 text-[13px] text-fg-faint">No changes in the working tree.</div>
+        <div className="p-4 text-ui-[13px] text-fg-faint">No changes in the working tree.</div>
       ) : (
         <>
           <div className="max-h-[38%] shrink-0 overflow-y-auto border-b border-border py-1">
@@ -89,7 +89,7 @@ export function DiffPanel() {
                   key={f.path}
                   onClick={() => setSelected(f.path)}
                   className={cn(
-                    "flex w-full items-center gap-2 px-3 py-1 text-left font-mono text-[12.5px] transition-colors",
+                    "flex w-full items-center gap-2 px-3 py-1 text-left font-mono text-ui-[12.5px] transition-colors",
                     selected === f.path ? "bg-active text-fg" : "text-fg-muted hover:bg-hover hover:text-fg",
                   )}
                 >
@@ -115,7 +115,7 @@ export function DiffPanel() {
                 }}
               />
             ) : (
-              <div className="p-4 text-[13px] text-fg-faint">Binary or empty change.</div>
+              <div className="p-4 text-ui-[13px] text-fg-faint">Binary or empty change.</div>
             )}
           </div>
         </>

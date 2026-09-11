@@ -47,6 +47,18 @@ export interface GuiSettings {
   panelTab: "changes" | "terminal";
   collapsedProjects: string[];
   lastSessionKey: string | null;
+  /** Interface font family; null means the system font. */
+  uiFont: string | null;
+  /** Base interface size in px; every UI size scales from 14. */
+  uiFontSize: number;
+  /** Terminal font family; null means the default monospace stack. */
+  terminalFont: string | null;
+  terminalFontSize: number;
+}
+
+export interface SystemFont {
+  family: string;
+  monospace: boolean;
 }
 
 export const DEFAULT_SETTINGS: GuiSettings = {
@@ -63,6 +75,10 @@ export const DEFAULT_SETTINGS: GuiSettings = {
   panelTab: "changes",
   collapsedProjects: [],
   lastSessionKey: null,
+  uiFont: null,
+  uiFontSize: 14,
+  terminalFont: null,
+  terminalFontSize: 13,
 };
 
 // ---- pi RPC shapes we rely on (subset, kept loose on purpose) ----
@@ -256,6 +272,7 @@ export const IPC = {
   updateOpenRelease: "update:openRelease",
   clipboardWrite: "clipboard:write",
   piLocate: "pi:locate",
+  fontsList: "fonts:list",
   // main -> renderer (send)
   piEvent: "pi:event",
   sessionLiveChanged: "session:liveChanged",
