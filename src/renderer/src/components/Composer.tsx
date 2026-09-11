@@ -5,6 +5,7 @@ import { bridge } from "@/lib/bridge";
 import { buildTranscript, promptHistory } from "@/lib/transcript";
 import { Menu, MenuContent, MenuItem, MenuLabel, MenuTrigger } from "@/components/ui";
 import { ContextMeter } from "@/components/ContextStrip";
+import { ImageThumb } from "@/components/Lightbox";
 import { cn, formatTokens } from "@/lib/utils";
 
 interface Attachment {
@@ -278,8 +279,7 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
       {attachments.length > 0 && (
         <div className="flex flex-wrap gap-2 px-3 pt-3">
           {attachments.map((a) => (
-            <div key={a.id} className="group relative h-14 w-14 overflow-hidden rounded-md border border-border">
-              <img src={a.url} alt="" className="h-full w-full object-cover" />
+            <ImageThumb key={a.id} src={a.url} size={56}>
               <button
                 onClick={() => setAttachments((list) => list.filter((x) => x.id !== a.id))}
                 className="absolute top-0.5 right-0.5 rounded-full bg-black/60 p-0.5 text-white opacity-0 transition-opacity group-hover:opacity-100"
@@ -287,7 +287,7 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
               >
                 <X className="h-3 w-3" strokeWidth={2.5} />
               </button>
-            </div>
+            </ImageThumb>
           ))}
         </div>
       )}

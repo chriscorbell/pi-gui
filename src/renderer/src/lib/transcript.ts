@@ -1,10 +1,11 @@
 import type { AgentMessage, ContentBlock, SessionEntry } from "@shared/contract";
 
+export type ImageBlock = Extract<ContentBlock, { type: "image" }>;
 export type ToolResultMsg = Extract<AgentMessage, { role: "toolResult" }>;
 export type AssistantMsg = Extract<AgentMessage, { role: "assistant" }>;
 
 export type TranscriptItem =
-  | { kind: "user"; id: string; text: string; images: number; timestamp: number }
+  | { kind: "user"; id: string; text: string; images: ImageBlock[]; timestamp: number }
   | { kind: "assistant"; id: string; message: AssistantMsg; results: Record<string, ToolResultMsg> }
   | { kind: "bash"; id: string; command: string; output: string; exitCode?: number }
   | { kind: "compaction"; id: string; summary: string; tokensBefore: number }
@@ -44,7 +45,7 @@ export function buildTranscript(entries: SessionEntry[], leafId: string | null):
       const m = e.message;
       switch (m.role) {
         case "user": {
-          const images = typeof m.content === "string" ? 0 : m.content.filter((b) => b.type === "image").length;
+          const images = typeof m.content === "string" ? [] : m.content.filter((b): b is ImageBlock => b.type === "image");
           items.push({ kind: "user", id: e.id, text: textOf(m.content), images, timestamp: m.timestamp });
           lastAssistant = null;
           break;

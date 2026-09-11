@@ -1,14 +1,15 @@
 import { memo, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ChevronRight, Image as ImageIcon, Layers, Terminal } from "lucide-react";
+import { ChevronRight, Layers, Terminal } from "lucide-react";
 import type { ContentBlock } from "@shared/contract";
 import type { PartialMessage, ToolRun } from "@/store/app";
 import { useApp } from "@/store/app";
-import type { AssistantMsg, ToolResultMsg, TranscriptItem } from "@/lib/transcript";
+import type { AssistantMsg, ImageBlock, ToolResultMsg, TranscriptItem } from "@/lib/transcript";
 import { ToolCallRow } from "@/components/ToolCallRow";
 import { Spinner } from "@/components/ui";
 import { CopyButton, CopyMenu } from "@/components/CopyMenu";
+import { ImageThumb } from "@/components/Lightbox";
 import { cn } from "@/lib/utils";
 
 const Markdown = memo(function Markdown({ text }: { text: string }) {
@@ -109,18 +110,20 @@ function AssistantItem({ message, results, toolRuns }: { message: AssistantMsg; 
   );
 }
 
-function UserItem({ text, images }: { text: string; images: number }) {
+function UserItem({ text, images }: { text: string; images: ImageBlock[] }) {
   return (
     <CopyMenu text={text}>
       <div className="group flex items-start justify-end gap-1 py-2">
         <CopyButton text={text} className="mt-1.5" />
         <div className="selectable max-w-[85%] rounded-lg bg-surface-raised border border-border px-3.5 py-2 text-[14.5px] leading-[1.55] whitespace-pre-wrap break-words">
-          {text}
-          {images > 0 && (
-            <div className="mt-1.5 flex items-center gap-1 text-[12.5px] text-fg-muted">
-              <ImageIcon className="h-3.5 w-3.5" strokeWidth={1.75} /> {images} image{images > 1 ? "s" : ""}
+          {images.length > 0 && (
+            <div className={cn("flex flex-wrap justify-end gap-2", text && "mb-2")}>
+              {images.map((img, i) => (
+                <ImageThumb key={i} src={`data:${img.mimeType};base64,${img.data}`} size={96} />
+              ))}
             </div>
           )}
+          {text}
         </div>
       </div>
     </CopyMenu>
