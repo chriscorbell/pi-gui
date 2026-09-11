@@ -1,20 +1,20 @@
 import { cn } from "@/lib/utils";
 
-/** The Pi glyph, drawn in currentColor. */
+/** The Pier mark: a pi glyph as a deck on two pilings, drawn in currentColor, over a blue wave. */
 export function Glyph({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 800 800" className={cn("h-4 w-4", className)} aria-hidden="true">
-      <path fill="currentColor" fillRule="evenodd" d="M165.29 165.29H517.36V400H400V517.36H282.65V634.72H165.29ZM282.65 282.65V400H400V282.65Z" />
-      <path fill="currentColor" d="M517.36 400H634.72V634.72H517.36Z" />
+    <svg viewBox="0 0 800 782" className={cn("h-4 w-4", className)} aria-hidden="true">
+      <path fill="currentColor" d="M139.1 157.5H0V1H800V157.5H660.9V592.3H504.3V157.5H295.7V592.3H139.1Z" />
+      <path fill="#5b8def" d="M50.7 735.6C37.1 747.2 17.3 744.6 6.7 729.8C-4 715 -1.6 693.6 12 682C49.1 650.5 86.5 635.6 123.5 635.6C160.6 635.6 198 650.5 235 682C259.4 702.7 283.5 713.9 307.8 713.9C332.2 713.9 356.3 702.7 380.7 682C417.7 650.5 455.1 635.6 492.2 635.6C529.2 635.6 566.6 650.5 603.7 682C628 702.7 652.1 713.9 676.5 713.9C700.8 713.9 724.9 702.7 749.3 682C762.9 670.4 782.7 673 793.3 687.8C804 702.6 801.6 724 788 735.6C750.9 767.1 713.5 782 676.5 782C639.4 782 602 767.1 565 735.6C540.6 714.9 516.5 703.7 492.2 703.7C467.8 703.7 443.7 714.9 419.3 735.6C382.3 767.1 344.9 782 307.8 782C270.8 782 233.4 767.1 196.3 735.6C172 714.9 147.9 703.7 123.5 703.7C99.2 703.7 75.1 714.9 50.7 735.6Z" />
     </svg>
   );
 }
 
-/** The glyph on its dark tile, as used for the app icon. */
+/** The mark on its dark tile, as used for the app icon. */
 export function Mark({ className }: { className?: string }) {
   return (
-    <span className={cn("inline-flex h-5 w-5 items-center justify-center rounded-[5px] bg-[#09090b] text-white ring-1 ring-white/10", className)}>
-      <Glyph className="h-[70%] w-[70%]" />
+    <span className={cn("inline-flex h-5 w-5 items-center justify-center rounded-[5px] bg-[#09090b] text-[#f4f4f5] ring-1 ring-white/10", className)}>
+      <Glyph className="h-[62%] w-[62%]" />
     </span>
   );
 }
