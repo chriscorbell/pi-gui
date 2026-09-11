@@ -26,7 +26,7 @@ export function ContextStrip({ sessionKey }: { sessionKey: string }) {
   if (statuses.length === 0 && cost === 0) return null;
 
   return (
-    <div className="flex h-7 items-center gap-3 px-2 text-[12px] text-fg-faint">
+    <div className="-mb-3 flex h-6 items-center gap-3 px-2 pt-1 text-[12px] text-fg-faint">
       {session.stats && session.stats.cost > 0 && <span className="tabular-nums">{formatCost(session.stats.cost)}</span>}
       <div className="selectable min-w-0 flex-1 truncate text-right font-mono" title={statuses.join("\n")}>
         {statuses.join("  ·  ")}

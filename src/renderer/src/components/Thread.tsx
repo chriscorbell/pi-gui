@@ -160,7 +160,7 @@ export function Thread() {
               )}
             </div>
           </div>
-          <div className="mx-auto w-full max-w-[860px] px-6 pb-2">{composerBlock}</div>
+          <div className="mx-auto w-full max-w-[860px] px-6 pb-5">{composerBlock}</div>
         </>
       )}
     </div>

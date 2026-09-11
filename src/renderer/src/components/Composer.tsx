@@ -92,7 +92,10 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
     const el = ref.current;
     if (!el) return;
     el.style.height = "0px";
-    el.style.height = Math.min(320, el.scrollHeight) + "px";
+    // +1 absorbs sub-pixel rounding of the line height, which otherwise leaves a scrollbar on an empty field.
+    const needed = el.scrollHeight + 1;
+    el.style.height = Math.min(320, needed) + "px";
+    el.style.overflowY = needed > 320 ? "auto" : "hidden";
   }, [text]);
 
   const history = useMemo(() => (session ? promptHistory(buildTranscript(session.entries, session.leafId)) : []), [session?.entries, session?.leafId]);
@@ -306,9 +309,9 @@ export function Composer({ sessionKey }: { sessionKey: string }) {
             void addFiles(imgs);
           }
         }}
-        className="selectable block w-full resize-none bg-transparent px-3.5 pt-3 pb-2 text-[14.5px] leading-[1.55] text-fg placeholder:text-fg-faint focus:outline-none"
+        className="selectable block w-full resize-none bg-transparent px-3.5 pt-2.5 pb-1 text-[14.5px] leading-[1.5] text-fg placeholder:text-fg-faint focus:outline-none"
       />
-      <div className="flex items-center justify-between px-2 pb-2">
+      <div className="flex items-center justify-between px-1.5 pb-1.5">
         <div className="flex items-center gap-0.5">
           <Menu>
             <MenuTrigger asChild>
