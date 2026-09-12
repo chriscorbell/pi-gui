@@ -54,6 +54,11 @@ export interface GuiSettings {
   /** Terminal font family; null means the default monospace stack. */
   terminalFont: string | null;
   terminalFontSize: number;
+  /** Theme ids from the renderer registry; "default" keeps the built-in palette. */
+  darkTheme: string;
+  lightTheme: string;
+  /** A theme id, or "match" to follow the interface theme. */
+  terminalTheme: string;
 }
 
 export interface SystemFont {
@@ -79,6 +84,9 @@ export const DEFAULT_SETTINGS: GuiSettings = {
   uiFontSize: 14,
   terminalFont: null,
   terminalFontSize: 13,
+  darkTheme: "default",
+  lightTheme: "default",
+  terminalTheme: "match",
 };
 
 // ---- pi RPC shapes we rely on (subset, kept loose on purpose) ----

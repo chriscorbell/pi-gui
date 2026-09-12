@@ -3,6 +3,7 @@ import { useApp } from "@/store/app";
 import { bridge } from "@/lib/bridge";
 import type { SystemFont } from "@shared/contract";
 import { Button, Field, Select, Sheet, Switch } from "@/components/ui";
+import { DEFAULT_THEME, MATCH_INTERFACE, THEMES } from "@/lib/themes";
 
 const UI_SIZES = [11, 12, 13, 14, 15, 16, 17, 18];
 const TERMINAL_SIZES = [10, 11, 12, 13, 14, 15, 16, 18, 20];
@@ -43,6 +44,38 @@ function FontSelect({
         </>
       ) : (
         rest.map(option)
+      )}
+    </select>
+  );
+}
+
+const DARK_THEMES = THEMES.filter((t) => t.appearance === "dark");
+const LIGHT_THEMES = THEMES.filter((t) => t.appearance === "light");
+
+function ThemeSelect({ value, onChange, groups, defaultLabel }: { value: string; onChange: (id: string) => void; groups: { label: string; themes: typeof THEMES }[]; defaultLabel: string }) {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="h-7 w-[168px] rounded-md border border-border-strong bg-surface-raised px-2 text-ui-[13.5px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+    >
+      <option value={groups.length > 1 ? MATCH_INTERFACE : DEFAULT_THEME}>{defaultLabel}</option>
+      {groups.map((g) =>
+        groups.length > 1 ? (
+          <optgroup key={g.label} label={g.label}>
+            {g.themes.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name}
+              </option>
+            ))}
+          </optgroup>
+        ) : (
+          g.themes.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.name}
+            </option>
+          ))
+        ),
       )}
     </select>
   );
@@ -89,6 +122,23 @@ export function SettingsSheet() {
               { value: "light", label: "Light" },
               { value: "dark", label: "Dark" },
             ]}
+          />
+        </Field>
+        <Field label="Dark theme" hint="Used whenever the appearance is dark.">
+          <ThemeSelect value={settings.darkTheme} defaultLabel="Pier" groups={[{ label: "Dark", themes: DARK_THEMES }]} onChange={(v) => void update({ darkTheme: v })} />
+        </Field>
+        <Field label="Light theme" hint="Used whenever the appearance is light.">
+          <ThemeSelect value={settings.lightTheme} defaultLabel="Pier" groups={[{ label: "Light", themes: LIGHT_THEMES }]} onChange={(v) => void update({ lightTheme: v })} />
+        </Field>
+        <Field label="Terminal theme" hint="Colors for the embedded shell.">
+          <ThemeSelect
+            value={settings.terminalTheme}
+            defaultLabel="Match interface"
+            groups={[
+              { label: "Dark", themes: DARK_THEMES },
+              { label: "Light", themes: LIGHT_THEMES },
+            ]}
+            onChange={(v) => void update({ terminalTheme: v })}
           />
         </Field>
         <Field label="Interface font" hint="Any installed font. The size scales the whole interface.">

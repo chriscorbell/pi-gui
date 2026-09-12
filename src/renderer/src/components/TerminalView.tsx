@@ -4,6 +4,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { bridge } from "@/lib/bridge";
 import { useApp } from "@/store/app";
+import { activeTerminalTheme } from "@/lib/themes";
 
 function cssVar(name: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -11,6 +12,18 @@ function cssVar(name: string): string {
 
 function themeFromTokens() {
   const dark = document.documentElement.classList.contains("dark");
+  const t = activeTerminalTheme(useApp.getState().settings, dark);
+  if (t) {
+    const [black, red, green, yellow, blue, magenta, cyan, white, brightBlack, brightRed, brightGreen, brightYellow, brightBlue, brightMagenta, brightCyan, brightWhite] = t.ansi;
+    return {
+      background: t.sunken,
+      foreground: t.fg,
+      cursor: t.fg,
+      cursorAccent: t.sunken,
+      selectionBackground: t.appearance === "dark" ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.14)",
+      black, red, green, yellow, blue, magenta, cyan, white, brightBlack, brightRed, brightGreen, brightYellow, brightBlue, brightMagenta, brightCyan, brightWhite,
+    };
+  }
   return {
     background: cssVar("--bg-sunken") || (dark ? "#101011" : "#fafafa"),
     foreground: cssVar("--fg"),
@@ -58,6 +71,12 @@ export function TerminalView({ sessionKey, cwd }: { sessionKey: string; cwd: str
   const hostRef = useRef<HTMLDivElement>(null);
   const fontFamily = useApp((s) => s.settings.terminalFont);
   const fontSize = useApp((s) => s.settings.terminalFontSize);
+  const themeKey = useApp((s) => `${s.settings.terminalTheme}|${s.settings.darkTheme}|${s.settings.lightTheme}`);
+
+  useEffect(() => {
+    const inst = instances.get(sessionKey);
+    if (inst) inst.term.options.theme = themeFromTokens();
+  }, [sessionKey, themeKey]);
 
   // Font changes apply to the live instance; fit() recomputes cols and rows for the new cell size.
   useEffect(() => {
