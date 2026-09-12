@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
@@ -73,9 +73,14 @@ export function TerminalView({ sessionKey, cwd }: { sessionKey: string; cwd: str
   const fontSize = useApp((s) => s.settings.terminalFontSize);
   const themeKey = useApp((s) => `${s.settings.terminalTheme}|${s.settings.darkTheme}|${s.settings.lightTheme}`);
 
+  // The host paints the terminal background too, so the padding around the canvas matches when
+  // the terminal theme differs from the interface theme.
+  const [background, setBackground] = useState<string>(() => themeFromTokens().background);
   useEffect(() => {
+    const theme = themeFromTokens();
+    setBackground(theme.background);
     const inst = instances.get(sessionKey);
-    if (inst) inst.term.options.theme = themeFromTokens();
+    if (inst) inst.term.options.theme = theme;
   }, [sessionKey, themeKey]);
 
   // Font changes apply to the live instance; fit() recomputes cols and rows for the new cell size.
@@ -140,7 +145,11 @@ export function TerminalView({ sessionKey, cwd }: { sessionKey: string; cwd: str
     });
     ro.observe(el);
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const onTheme = () => (term.options.theme = themeFromTokens());
+    const onTheme = () => {
+      const theme = themeFromTokens();
+      term.options.theme = theme;
+      setBackground(theme.background);
+    };
     mq.addEventListener("change", onTheme);
     const observer = new MutationObserver(onTheme);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
@@ -154,7 +163,7 @@ export function TerminalView({ sessionKey, cwd }: { sessionKey: string; cwd: str
     };
   }, [sessionKey, cwd]);
 
-  return <div ref={hostRef} className="h-full w-full px-2 pt-1" />;
+  return <div ref={hostRef} className="h-full w-full px-2 pt-1" style={{ background }} />;
 }
 
 export function disposeTerminal(sessionKey: string): void {
